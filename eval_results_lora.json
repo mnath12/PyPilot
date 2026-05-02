@@ -1,0 +1,1607 @@
+{
+  "metrics": {
+    "compile_rate": 98.24561403508773,
+    "pass_rate": 4.385964912280702,
+    "compile_count": 224,
+    "pass_count": 10,
+    "evaluated": 228
+  },
+  "results": [
+    {
+      "task_id": "shortest-distance-after-road-addition-queries-i",
+      "difficulty": "Medium",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\n\nclass Solution:\n    def shortestDistanceAfterQueries(self, n: int, queries: List[List[int]]) -> List[int]:\n        graph = [[] for _ in range(n)]\n        for u, v in queries:\n            graph[u].append(v)\n            graph[v].append(u)\n        \n        dist = [n-1] * n\n        dist[0] = 0\n        \n        for u in range(n):\n            queue = [u]\n            visited = set([u])\n            \n            while queue:\n                node = queue.pop(0)\n                for neighbor in graph[node]:\n                    if neighbor not in visited:\n                        visited.add(neighbor)\n                        queue.append(neighbor)\n                        dist[neighbor] = min(dist[neighbor], dist[node] + 1)\n        \n        return dist"
+    },
+    {
+      "task_id": "shortest-distance-after-road-addition-queries-ii",
+      "difficulty": "Hard",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import *\nimport heapq\n\nclass Solution:\n    def shortestDistanceAfterQueries(self, n: int, queries: List[List[int]]) -> List[int]:\n        dist = [n-1] * n\n        heap = []\n        for u, v in queries:\n            if u == v:\n                continue\n            heapq.heappush(heap, (dist[u], u))\n            heapq.heappush(heap, (dist[v], v))\n            dist[u] = min(dist[u], dist[v]+1)\n            dist[v] = min(dist[v], dist[u]+1)\n        return [dist[0]] + [heapq.heappop(heap)[0] for _ in range(len(queries))]"
+    },
+    {
+      "task_id": "number-of-subsequences-with-odd-sum",
+      "difficulty": "Medium",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\nclass Solution:\n    def subsequenceCount(self, nums: List[int]) -> int:\n        MOD = 10**9 + 7\n        dp = [0] * (max(nums) + 1)\n        dp[0] = 1\n        \n        for num in nums:\n            for i in range(num, -1, -1):\n                dp[i] = (dp[i] + dp[i + num]) % MOD\n        \n        return dp[-1]"
+    },
+    {
+      "task_id": "snake-in-matrix",
+      "difficulty": "Easy",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\nclass Solution:\n    def finalPositionOfSnake(self, n: int, commands: List[str]) -> int:\n        # Initialize the snake's position and direction\n        row, col = 0, 0\n        direction = 'RIGHT'\n        \n        # Create a list to represent the snake's body\n        body = [(row, col)]\n        \n        for command in commands:\n            if command == 'UP':\n                direction = 'UP' if direction != 'DOWN' else 'DOWN'\n            elif command == 'DOWN':\n                direction = 'DOWN' if direction != 'UP' else 'UP'\n            elif command == 'LEFT':\n                direction = 'LEFT' if direction != 'RIGHT' else 'RIGHT'\n            elif command == 'RIGHT':\n                direction = 'RIGHT' if direction != 'LEFT' else 'LEFT'\n            \n            # Move the snake based on the current direction\n            if direction == 'UP':\n                row -= 1\n            elif direction == 'DOWN':\n                row += 1\n            elif direction == 'LEFT':\n                col -= 1\n            elif direction == 'RIGHT':\n                col += 1\n            \n            # Check if the new position is valid\n            if 0 <= row < n and 0 <= col < n:\n                # Add the new position to the snake's body\n                body.append((row, col))\n                \n                # If the snake eats itself, remove the last part of the body\n                if len(body) > n:\n                    body.pop(0)\n        \n        return body[-1][0] * n + body[-1][1]"
+    },
+    {
+      "task_id": "count-the-number-of-good-nodes",
+      "difficulty": "Medium",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from collections import defaultdict, deque, Counter\nfrom typing import List\nclass Solution:\n    def countGoodNodes(self, edges: List[List[int]]) -> int:\n        graph = defaultdict(list)\n        for u, v in edges:\n            graph[u].append(v)\n            graph[v].append(u)\n        \n        def dfs(node, parent):\n            if not graph[node]:\n                return 1\n            \n            count = 1\n            for neighbor in graph[node]:\n                if neighbor != parent:\n                    count += dfs(neighbor, node)\n            \n            return count\n        \n        return sum(dfs(i, None) for i in range(len(graph)))"
+    },
+    {
+      "task_id": "find-the-count-of-monotonic-pairs-i",
+      "difficulty": "Hard",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import *\nfrom collections import *\n\nclass Solution:\n    def countOfPairs(self, nums: List[int]) -> int:\n        MOD = 10**9 + 7\n        \n        # Count occurrences of each number\n        num_count = Counter(nums)\n        \n        # Calculate the number of monotonic pairs\n        ans = 0\n        for freq in num_count.values():\n            ans += freq * (freq - 1) // 2\n        \n        return ans % MOD"
+    },
+    {
+      "task_id": "find-the-count-of-monotonic-pairs-ii",
+      "difficulty": "Hard",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\nfrom collections import Counter\n\nclass Solution:\n    def countOfPairs(self, nums: List[int]) -> int:\n        c = Counter(nums)\n        res = 0\n        for k, v in c.items():\n            res += v * (v - 1) // 2\n        return res % (10**9 + 7)"
+    },
+    {
+      "task_id": "construct-string-with-minimum-cost-easy",
+      "difficulty": "Medium",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\nclass Solution:\n    def minimumCost(self, target: str, words: List[str], costs: List[int]) -> int:\n        dp = [float('inf')] * len(target)\n        for word, cost in zip(words, costs):\n            if len(word) > len(target): continue\n            for i in range(len(target) - len(word), -1, -1):\n                if target[i:i+len(word)] == word:\n                    dp[i] = min(dp[i], dp[i+len(word)] + cost)\n        return dp[0] if dp[0] != float('inf') else -1"
+    },
+    {
+      "task_id": "find-the-power-of-k-size-subarrays-i",
+      "difficulty": "Medium",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\nclass Solution:\n    def resultsArray(self, nums: List[int], k: int) -> List[int]:\n        res = []\n        for i in range(len(nums)-k+1):\n            subarray = nums[i:i+k]\n            if len(set(subarray)) == k and sorted(subarray) == subarray:\n                res.append(max(subarray))\n            else:\n                res.append(-1)\n        return res"
+    },
+    {
+      "task_id": "find-the-power-of-k-size-subarrays-ii",
+      "difficulty": "Medium",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\nclass Solution:\n    def resultsArray(self, nums: List[int], k: int) -> List[int]:\n        res = []\n        for i in range(len(nums)-k+1):\n            subarray = nums[i:i+k]\n            if len(set(subarray)) == k and sorted(subarray) == subarray:\n                res.append(max(subarray))\n            else:\n                res.append(-1)\n        return res"
+    },
+    {
+      "task_id": "maximum-value-sum-by-placing-three-rooks-i",
+      "difficulty": "Hard",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\nclass Solution:\n    def maximumValueSum(self, board: List[List[int]]) -> int:\n        rows = len(board)\n        cols = len(board[0])\n        max_sum = float('-inf')\n        \n        # Find the positions of rooks\n        rook_positions = []\n        for i in range(rows):\n            for j in range(cols):\n                if board[i][j] == 1:\n                    rook_positions.append((i, j))\n        \n        # Calculate the sum of values around each rook\n        for r1, c1 in rook_positions:\n            row_sum = sum(board[r][c1] for r in range(r1 - 1, r1 + 2) if 0 <= r < rows)\n            col_sum = sum(board[r1][c] for c in range(c1 - 1, c1 + 2) if 0 <= c < cols)\n            max_sum = max(max_sum, row_sum + col_sum)\n        \n        return max_sum"
+    },
+    {
+      "task_id": "maximum-value-sum-by-placing-three-rooks-ii",
+      "difficulty": "Hard",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\nclass Solution:\n    def maximumValueSum(self, board: List[List[int]]) -> int:\n        rows = len(board)\n        cols = len(board[0])\n        max_sum = float('-inf')\n        \n        # Find the positions of rooks\n        rook_positions = []\n        for i in range(rows):\n            for j in range(cols):\n                if board[i][j] == 1:\n                    rook_positions.append((i, j))\n        \n        # Calculate the sum of values around each rook\n        for r1, c1 in rook_positions:\n            row_sum = sum(board[r][c1] for r in range(r1 - 1, r1 + 2) if 0 <= r < rows)\n            col_sum = sum(board[r1][c] for c in range(c1 - 1, c1 + 2) if 0 <= c < cols)\n            max_sum = max(max_sum, row_sum + col_sum)\n        \n        return max_sum"
+    },
+    {
+      "task_id": "count-substrings-that-satisfy-k-constraint-i",
+      "difficulty": "Easy",
+      "compiles": true,
+      "passed": true,
+      "generated_code": "class Solution:\n    def countKConstraintSubstrings(self, s: str, k: int) -> int:\n        left, right, zero_count, one_count, result = 0, 0, 0, 0, 0\n        \n        while right < len(s):\n            if s[right] == '0':\n                zero_count += 1\n            else:\n                one_count += 1\n            \n            while zero_count > k and one_count > k:\n                if s[left] == '0':\n                    zero_count -= 1\n                else:\n                    one_count -= 1\n                left += 1\n            \n            result += right - left + 1\n        \n            right += 1\n        \n        return result"
+    },
+    {
+      "task_id": "maximum-energy-boost-from-two-drinks",
+      "difficulty": "Medium",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\n\nclass Solution:\n    def maxEnergyBoost(self, energyDrinkA: List[int], energyDrinkB: List[int]) -> int:\n        return sum(max(a, b) for a, b in zip(energyDrinkA, energyDrinkB)) + min(len(energyDrinkA), len(energyDrinkB))"
+    },
+    {
+      "task_id": "find-the-largest-palindrome-divisible-by-k",
+      "difficulty": "Hard",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "class Solution:\n    def largestPalindrome(self, n: int, k: int) -> str:\n        if k == 0:\n            return '0' * n\n        \n        # If k is greater than 9, it's impossible to form a valid palindrome\n        if k > 9:\n            return '0' * n\n        \n        # If n is 1, the largest palindrome is simply the number itself\n        if n == 1:\n            return str(k)\n        \n        # For even n, the palindrome can be formed by repeating the middle digit\n        if n % 2 == 0:\n            mid_digit = k // 2\n            return f\"{mid_digit}{mid_digit}\"\n        \n        # For odd n, the palindrome can be formed by repeating the middle digit and adding one more on each side\n        else:\n            mid_digit = k // 2\n            left_side = str(mid_digit)\n            right_side = str(mid_digit + 1)\n            return f\"{left_side}{right_side}{left_side}\""
+    },
+    {
+      "task_id": "count-substrings-that-satisfy-k-constraint-ii",
+      "difficulty": "Hard",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\n\nclass Solution:\n    def countKConstraintSubstrings(self, s: str, k: int, queries: List[List[int]]) -> List[int]:\n        n = len(s)\n        prefix_ones = [0] * (n + 1)\n        prefix_zeros = [0] * (n + 1)\n\n        # Counting ones and zeros up to each index\n        for i in range(1, n + 1):\n            prefix_ones[i] = prefix_ones[i - 1] + (s[i - 1] == '1')\n            prefix_zeros[i] = prefix_zeros[i - 1] + (s[i - 1] == '0')\n\n        result = []\n        for l, r in queries:\n            # Calculate the number of valid substrings ending at r\n            if prefix_ones[r] - prefix_ones[l] > k:\n                result.append((r - l + 1) * (r - l + 2) // 2)\n            else:\n                result.append(prefix_ones[r] - prefix_ones[l])\n\n        return result"
+    },
+    {
+      "task_id": "final-array-state-after-k-multiplication-operations-i",
+      "difficulty": "Easy",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\nclass Solution:\n    def getFinalState(self, nums: List[int], k: int, multiplier: int) -> List[int]:\n        for _ in range(k):\n            min_val = min(nums)\n            nums.remove(min_val)\n            nums.append(min_val * multiplier)\n        return nums"
+    },
+    {
+      "task_id": "count-almost-equal-pairs-i",
+      "difficulty": "Medium",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\nclass Solution:\n    def countPairs(self, nums: List[int]) -> int:\n        return sum([sum(1 for n in nums if str(n)[i] == str(n)[j]) for i in range(len(nums)) for j in range(i+1, len(nums))])"
+    },
+    {
+      "task_id": "final-array-state-after-k-multiplication-operations-ii",
+      "difficulty": "Hard",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import *\nfrom collections import *\n\nclass Solution:\n    def getFinalState(self, nums: List[int], k: int, multiplier: int) -> List[int]:\n        return [(min(nums) * multiplier) % (10**9 + 7) for _ in range(k)]"
+    },
+    {
+      "task_id": "count-almost-equal-pairs-ii",
+      "difficulty": "Hard",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\nclass Solution:\n    def countPairs(self, nums: List[int]) -> int:\n        n = len(nums)\n        res = 0\n        \n        # Convert each number to a string to easily manipulate its digits\n        nums_str = [str(num) for num in nums]\n        \n        for i in range(n):\n            for j in range(i+1, n):\n                # Check if the numbers are almost equal by comparing their digits\n                if self.are_almost_equal(nums_str[i], nums_str[j]):\n                    res += 1\n        \n        return res\n    \n    def are_almost_equal(self, s1: str, s2: str) -> bool:\n        # Swap the digits of one number to match the other\n        for i in range(len(s1)):\n            for j in range(len(s2)):\n                if s1[i] == s2[j]:\n                    temp = list(s1)\n                    temp[i], temp[j] = temp[j], temp[i]\n                    if ''.join(temp) == s2:\n                        return True\n        return False"
+    },
+    {
+      "task_id": "constructing-two-increasing-arrays",
+      "difficulty": "Hard",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\nclass Solution:\n    def minLargest(self, nums1: List[int], nums2: List[int]) -> int:\n        nums1.sort()\n        nums2.sort(reverse=True)\n        i, j = 0, 0\n        res = 0\n        while i < len(nums1):\n            if nums1[i] == 0:\n                res += nums2[j]\n                j += 1\n            else:\n                res += nums1[i]\n            i += 1\n        return res"
+    },
+    {
+      "task_id": "find-the-key-of-the-numbers",
+      "difficulty": "Easy",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "class Solution:\n    def generateKey(self, num1: int, num2: int, num3: int) -> int:\n        return int(min(str(num1), str(num2), str(num3)))"
+    },
+    {
+      "task_id": "hash-divided-string",
+      "difficulty": "Medium",
+      "compiles": true,
+      "passed": true,
+      "generated_code": "class Solution:\n    def stringHash(self, s: str, k: int) -> str:\n        result = \"\"\n        for i in range(0, len(s), k):\n            substring = s[i:i+k]\n            sum_of_chars = sum(ord(char) - ord('a') for char in substring)\n            hashed_char = sum_of_chars % 26\n            result += chr(hashed_char + ord('a'))\n        return result"
+    },
+    {
+      "task_id": "find-the-count-of-good-integers",
+      "difficulty": "Hard",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from itertools import permutations\n\nclass Solution:\n    def countGoodIntegers(self, n: int, k: int) -> int:\n        count = 0\n        for perm in permutations(str(k), n):\n            num = int(''.join(perm))\n            if str(num) == str(num)[::-1] and num % k == 0:\n                count += 1\n        return count"
+    },
+    {
+      "task_id": "minimum-amount-of-damage-dealt-to-bob",
+      "difficulty": "Hard",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\nclass Solution:\n    def minDamage(self, power: int, damage: List[int], health: List[int]) -> int:\n        return sum(min(power // d, h) for d, h in zip(damage, health))"
+    },
+    {
+      "task_id": "check-if-two-chessboard-squares-have-the-same-color",
+      "difficulty": "Easy",
+      "compiles": true,
+      "passed": true,
+      "generated_code": "class Solution:\n    def checkTwoChessboards(self, coordinate1: str, coordinate2: str) -> bool:\n        return (ord(coordinate1[0]) + int(coordinate1[1])) % 2 == (ord(coordinate2[0]) + int(coordinate2[1])) % 2"
+    },
+    {
+      "task_id": "k-th-nearest-obstacle-queries",
+      "difficulty": "Medium",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\nfrom sortedcontainers import SortedList\n\nclass Solution:\n    def resultsArray(self, queries: List[List[int]], k: int) -> List[int]:\n        obstacles = SortedList()\n        result = []\n        for x, y in queries:\n            obstacles.add((x, y))\n            while len(obstacles) > k:\n                obstacles.pop(0)\n            result.append(len(obstacles))\n        return result"
+    },
+    {
+      "task_id": "select-cells-in-grid-with-maximum-score",
+      "difficulty": "Hard",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\n\nclass Solution:\n    def maxScore(self, grid: List[List[int]]) -> int:\n        rows = len(grid)\n        cols = len(grid[0])\n        max_score = 0\n        \n        for i in range(rows):\n            row_values = sorted(set(grid[i]))\n            max_score += sum(row_values[:cols // 2])\n            \n        return max_score"
+    },
+    {
+      "task_id": "maximum-xor-score-subarray-queries",
+      "difficulty": "Hard",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\nclass Solution:\n    def maximumSubarrayXor(self, nums: List[int], queries: List[List[int]]) -> List[int]:\n        ans = []\n        for l, r in queries:\n            xor = 0\n            for num in range(l, r+1):\n                xor ^= nums[num]\n            ans.append(xor)\n        return ans"
+    },
+    {
+      "task_id": "maximum-total-area-occupied-by-pistons",
+      "difficulty": "Hard",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\nclass Solution:\n    def maxArea(self, height: int, positions: List[int], directions: str) -> int:\n        stack = []\n        left = 0\n        right = len(positions) - 1\n        ans = 0\n        \n        while left <= right:\n            if not stack or positions[stack[-1]] < positions[left]:\n                stack.append(left)\n                left += 1\n            else:\n                top = stack.pop()\n                if directions[top] == 'U':\n                    ans = max(ans, positions[top] * (left - top))\n                else:\n                    ans = max(ans, positions[top] * (right - top))\n                \n                if stack:\n                    right = stack[-1]\n                else:\n                    right = len(positions) - 1\n        \n        return ans"
+    },
+    {
+      "task_id": "convert-date-to-binary",
+      "difficulty": "Easy",
+      "compiles": true,
+      "passed": true,
+      "generated_code": "class Solution:\n    def convertDateToBinary(self, date: str) -> str:\n        year, month, day = map(int, date.split('-'))\n        return f\"{year:b}-{month:b}-{day:b}\""
+    },
+    {
+      "task_id": "maximize-score-of-numbers-in-ranges",
+      "difficulty": "Medium",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\nclass Solution:\n    def maxPossibleScore(self, start: List[int], d: int) -> int:\n        return max([abs(start[i] - start[i+d]) for i in range(len(start)-d)])"
+    },
+    {
+      "task_id": "reach-end-of-array-with-max-score",
+      "difficulty": "Medium",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\nclass Solution:\n    def findMaximumScore(self, nums: List[int]) -> int:\n        if not nums:\n            return 0\n        \n        max_score = nums[0]\n        current_max = nums[0]\n        \n        for i in range(1, len(nums)):\n            current_max = max(current_max + nums[i], nums[i])\n            max_score = max(max_score, current_max)\n        \n        return max_score"
+    },
+    {
+      "task_id": "maximum-number-of-moves-to-kill-all-pawns",
+      "difficulty": "Hard",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\nclass Solution:\n    def maxMoves(self, kx: int, ky: int, positions: List[List[int]]) -> int:\n        directions = [(2, 1), (-2, 1), (2, -1), (-2, -1), (1, 2), (-1, 2), (1, -2), (-1, -2)]\n        visited = set()\n        moves = 0\n        \n        def is_valid(x, y):\n            return 0 <= x < 50 and 0 <= y < 50\n        \n        def get_moves(x, y):\n            count = 0\n            for dx, dy in directions:\n                nx, ny = x + dx, y + dy\n                if is_valid(nx, ny) and (nx, ny) not in visited:\n                    count += 1\n            return count\n        \n        for pos in positions:\n            x, y = pos\n            visited.add((x, y))\n            moves += get_moves(kx, ky)\n            \n        return moves"
+    },
+    {
+      "task_id": "sum-of-consecutive-subarrays",
+      "difficulty": "Medium",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\nclass Solution:\n    def getSum(self, nums: List[int]) -> int:\n        ans = 0\n        for i in range(len(nums)):\n            ans += (i+1)*nums[i]\n        return ans % (10**9 + 7)"
+    },
+    {
+      "task_id": "find-indices-of-stable-mountains",
+      "difficulty": "Easy",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\nclass Solution:\n    def stableMountains(self, height: List[int], threshold: int) -> List[int]:\n        result = []\n        for i in range(1, len(height)):\n            if height[i] > threshold and height[i-1] < threshold:\n                result.append(i)\n        return result"
+    },
+    {
+      "task_id": "find-a-safe-walk-through-a-grid",
+      "difficulty": "Medium",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\nclass Solution:\n    def findSafeWalk(self, grid: List[List[int]], health: int) -> bool:\n        m, n = len(grid), len(grid[0])\n        dp = [[-1] * n for _ in range(m)]\n        dp[m-1][n-1] = health\n        \n        for i in range(m-1, -1, -1):\n            for j in range(n-1, -1, -1):\n                if grid[i][j] == 1:\n                    health -= 1\n                \n                if health < 0:\n                    continue\n                \n                if i+1 < m:\n                    dp[i][j] = max(dp[i][j], dp[i+1][j]+health)\n                \n                if j+1 < n:\n                    dp[i][j] = max(dp[i][j], dp[i][j+1]+health)\n                \n                if i-1 >= 0:\n                    dp[i][j] = max(dp[i][j], dp[i-1][j]+health)\n                \n                if j-1 >= 0:\n                    dp[i][j] = max(dp[i][j], dp[i][j-1]+health)\n        \n        return dp[0][0] >= 0"
+    },
+    {
+      "task_id": "find-the-maximum-sequence-value-of-array",
+      "difficulty": "Hard",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\nclass Solution:\n    def maxValue(self, nums: List[int], k: int) -> int:\n        nums.sort()\n        return sum(nums[-k:])"
+    },
+    {
+      "task_id": "length-of-the-longest-increasing-path",
+      "difficulty": "Hard",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\nfrom collections import defaultdict\nfrom functools import lru_cache\n\nclass Solution:\n    def maxPathLength(self, coordinates: List[List[int]], k: int) -> int:\n        @lru_cache(None)\n        def dfs(i, j):\n            if i >= len(coordinates) or j >= len(coordinates[0]) or abs(coordinates[i][0] - coordinates[j][0]) > k or abs(coordinates[i][1] - coordinates[j][1]) > k:\n                return 0\n            return 1 + max(dfs(x, y) for x, y in [(i+1, j), (i-1, j), (i, j+1), (i, j-1)])\n        \n        return max(dfs(i, j) for i, j in coordinates)"
+    },
+    {
+      "task_id": "the-two-sneaky-numbers-of-digitville",
+      "difficulty": "Easy",
+      "compiles": true,
+      "passed": true,
+      "generated_code": "from typing import List\nclass Solution:\n    def getSneakyNumbers(self, nums: List[int]) -> List[int]:\n        count = {}\n        for num in nums:\n            if num in count:\n                count[num] += 1\n            else:\n                count[num] = 1\n        \n        result = []\n        for key, value in count.items():\n            if value == 2:\n                result.append(key)\n        \n        return result"
+    },
+    {
+      "task_id": "maximum-multiplication-score",
+      "difficulty": "Medium",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\nclass Solution:\n    def maxScore(self, a: List[int], b: List[int]) -> int:\n        return sum(a[i] * b[i] for i in sorted(range(4), key=lambda x: b[x]))"
+    },
+    {
+      "task_id": "minimum-number-of-valid-strings-to-form-target-i",
+      "difficulty": "Medium",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from collections import Counter\nfrom typing import List\nclass Solution:\n    def minValidStrings(self, words: List[str], target: str) -> int:\n        count = Counter(target)\n        for word in words:\n            if word[:len(target)] == target:\n                count[word[len(target):]] += 1\n        return len(count)"
+    },
+    {
+      "task_id": "minimum-number-of-valid-strings-to-form-target-ii",
+      "difficulty": "Hard",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from collections import Counter\nfrom typing import List\nclass Solution:\n    def minValidStrings(self, words: List[str], target: str) -> int:\n        count = Counter(target)\n        for word in words:\n            if word[:len(target)] == target:\n                count[word[len(target):]] += 1\n        return len(count)"
+    },
+    {
+      "task_id": "report-spam-message",
+      "difficulty": "Medium",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\nclass Solution:\n    def reportSpam(self, message: List[str], bannedWords: List[str]) -> bool:\n        return len(set(message) & set(bannedWords)) >= 2"
+    },
+    {
+      "task_id": "minimum-number-of-seconds-to-make-mountain-height-zero",
+      "difficulty": "Medium",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\nclass Solution:\n    def minNumberOfSeconds(self, mountainHeight: int, workerTimes: List[int]) -> int:\n        workerTimes.sort()\n        ans = 0\n        for i in range(len(workerTimes)):\n            ans += workerTimes[i] + sum([workerTimes[j]*j for j in range(i+1)])\n        return ans // 2"
+    },
+    {
+      "task_id": "count-substrings-that-can-be-rearranged-to-contain-a-string-i",
+      "difficulty": "Medium",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from collections import Counter\n\nclass Solution:\n    def validSubstringCount(self, word1: str, word2: str) -> int:\n        count_word2 = Counter(word2)\n        count_word1 = Counter(word1[:len(word2)])\n        res = len(word1) - len(word2)\n        for c in count_word2:\n            if c not in count_word1:\n                return 0\n            if count_word1[c] < count_word2[c]:\n                return 0\n            res += min(count_word1[c], count_word2[c])\n        return res"
+    },
+    {
+      "task_id": "count-substrings-that-can-be-rearranged-to-contain-a-string-ii",
+      "difficulty": "Hard",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from collections import Counter\n\nclass Solution:\n    def validSubstringCount(self, word1: str, word2: str) -> int:\n        count_word1 = Counter(word1)\n        count_word2 = Counter(word2)\n\n        # Ensure word2 is a prefix of word1\n        if not word1.startswith(word2):\n            return 0\n\n        # Calculate the number of valid substrings\n        valid_substrings = 0\n        for i in range(len(word1)):\n            if word1[i] == word2[0]:\n                valid_substrings += len(word1) - i\n\n        return valid_substrings"
+    },
+    {
+      "task_id": "sum-of-consecutive-subsequences",
+      "difficulty": "Hard",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\nfrom functools import reduce\nfrom operator import add\n\nclass Solution:\n    def getSum(self, nums: List[int]) -> int:\n        nums.sort()\n        mod = 10**9 + 7\n        \n        # Calculate the prefix sums\n        prefix_sums = list(accumulate(nums))\n        \n        # Calculate the number of ways to choose two indices i and j such that nums[j] - nums[i] = k\n        count = 0\n        for i in range(len(nums)):\n            for k in range(-1, 2):\n                j = i + k\n                if j >= len(nums):\n                    break\n                count += prefix_sums[j] - prefix_sums[i]\n        \n        # Return the sum of the values of all consecutive non-empty subsequences\n        return (count * (count + 1)) // 2 % mod"
+    },
+    {
+      "task_id": "minimum-element-after-replacement-with-digit-sum",
+      "difficulty": "Easy",
+      "compiles": true,
+      "passed": true,
+      "generated_code": "from typing import List\nclass Solution:\n    def minElement(self, nums: List[int]) -> int:\n        return min([sum(int(digit) for digit in str(num)) for num in nums])"
+    },
+    {
+      "task_id": "maximize-the-total-height-of-unique-towers",
+      "difficulty": "Medium",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\n\nclass Solution:\n    def maximumTotalSum(self, maximumHeight: List[int]) -> int:\n        if len(maximumHeight) == 0:\n            return 0\n        \n        # Sort the maximum heights in descending order\n        sorted_heights = sorted(maximumHeight, reverse=True)\n        \n        # Calculate the total sum of the tower heights\n        total_sum = sum(sorted_heights)\n        \n        return total_sum"
+    },
+    {
+      "task_id": "find-the-lexicographically-smallest-valid-sequence",
+      "difficulty": "Medium",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\n\nclass Solution:\n    def validSequence(self, word1: str, word2: str) -> List[int]:\n        n, m = len(word1), len(word2)\n        dp = [[float('inf')] * m for _ in range(n)]\n        dp[0][0] = 0\n        \n        for i in range(1, n):\n            for j in range(m):\n                if word1[i] == word2[j]:\n                    dp[i][j] = min(dp[i][j], dp[i-1][j])\n                else:\n                    dp[i][j] = min(dp[i][j], dp[i-1][j+1])\n        \n        result = []\n        i, j = n - 1, m - 1\n        while i >= 0:\n            if word1[i] == word2[j]:\n                result.append(i)\n                i -= 1\n                j -= 1\n            elif dp[i][j] == dp[i-1][j+1]:\n                result.append(i)\n                i -= 1\n            else:\n                result.append(i)\n                i -= 1\n                j += 1\n        \n        result.reverse()\n        return result"
+    },
+    {
+      "task_id": "find-the-occurrence-of-first-almost-equal-substring",
+      "difficulty": "Hard",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "class Solution:\n    def minStartingIndex(self, s: str, pattern: str) -> int:\n        n, m = len(s), len(pattern)\n        for i in range(n - m + 1):\n            if s[i:i+m] == pattern:\n                return i\n        return -1"
+    },
+    {
+      "task_id": "find-the-k-th-character-in-string-game-i",
+      "difficulty": "Easy",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "class Solution:\n    def kthCharacter(self, k: int) -> str:\n        return chr((k - 1) % 26 + ord('a'))"
+    },
+    {
+      "task_id": "count-of-substrings-containing-every-vowel-and-k-consonants-i",
+      "difficulty": "Medium",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "class Solution:\n    def countOfSubstrings(self, word: str, k: int) -> int:\n        vowels = set('aeiou')\n        n = len(word)\n        left = right = 0\n        vowel_count = 0\n        result = 0\n        \n        while right < n:\n            if word[right] in vowels:\n                vowel_count += 1\n            \n            while vowel_count > k:\n                if word[left] in vowels:\n                    vowel_count -= 1\n                left += 1\n            \n            result += right - left + 1\n            right += 1\n        \n        return result"
+    },
+    {
+      "task_id": "count-of-substrings-containing-every-vowel-and-k-consonants-ii",
+      "difficulty": "Medium",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "class Solution:\n    def countOfSubstrings(self, word: str, k: int) -> int:\n        vowels = set('aeiou')\n        n = len(word)\n        left = right = 0\n        vowel_count = 0\n        result = 0\n        \n        while right < n:\n            if word[right] in vowels:\n                vowel_count += 1\n            \n            while vowel_count > k:\n                if word[left] in vowels:\n                    vowel_count -= 1\n                left += 1\n            \n            result += right - left + 1\n            right += 1\n        \n        return result"
+    },
+    {
+      "task_id": "find-the-k-th-character-in-string-game-ii",
+      "difficulty": "Hard",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\nclass Solution:\n    def kthCharacter(self, k: int, operations: List[int]) -> str:\n        for op in operations:\n            if op == 0:\n                k *= 2\n            else:\n                k += 1\n        return chr(ord('a') + (k - 1) % 26)"
+    },
+    {
+      "task_id": "maximum-possible-number-by-binary-concatenation",
+      "difficulty": "Medium",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\nclass Solution:\n    def maxGoodNumber(self, nums: List[int]) -> int:\n        return int(''.join(str(num) for num in sorted(nums)), 2)"
+    },
+    {
+      "task_id": "remove-methods-from-project",
+      "difficulty": "Medium",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\nclass Solution:\n    def remainingMethods(self, n: int, k: int, invocations: List[List[int]]) -> List[int]:\n        graph = [[] for _ in range(n)]\n        for a, b in invocations:\n            graph[a].append(b)\n        \n        # Topological sort to find the order of removal\n        stack = [k]\n        visited = set()\n        while stack:\n            node = stack.pop()\n            visited.add(node)\n            for neighbor in graph[node]:\n                if neighbor not in visited:\n                    stack.append(neighbor)\n        \n        # Remove the nodes in the order found\n        result = [i for i in range(n) if i not in visited]\n        return result"
+    },
+    {
+      "task_id": "construct-2d-grid-matching-graph-layout",
+      "difficulty": "Hard",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\nfrom collections import defaultdict\n\nclass Solution:\n    def constructGridLayout(self, n: int, edges: List[List[int]]) -> List[List[int]]:\n        graph = defaultdict(list)\n        for u, v in edges:\n            graph[u].append(v)\n            graph[v].append(u)\n\n        visited = set()\n        stack = [0]\n        while stack:\n            node = stack.pop()\n            if node not in visited:\n                visited.add(node)\n                stack.extend(graph[node])\n\n        result = []\n        for i in range(n):\n            if i not in visited:\n                result.append([i])\n                stack = [i]\n                while stack:\n                    node = stack.pop()\n                    if node not in visited:\n                        visited.add(node)\n                        stack.extend(graph[node])\n\n        return result"
+    },
+    {
+      "task_id": "sorted-gcd-pair-queries",
+      "difficulty": "Hard",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import *\nimport collections\n\nclass Solution:\n    def gcdValues(self, nums: List[int], queries: List[int]) -> List[int]:\n        gcds = []\n        for i in range(len(nums)):\n            for j in range(i+1, len(nums)):\n                gcds.append(gcd(nums[i], nums[j]))\n        gcds.sort()\n        return [gcds[q] for q in queries]"
+    },
+    {
+      "task_id": "find-the-last-marked-nodes-in-tree",
+      "difficulty": "Hard",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from collections import defaultdict, deque, Counter\nfrom typing import List\nclass Solution:\n    def lastMarkedNodes(self, edges: List[List[int]]) -> List[int]:\n        graph = defaultdict(list)\n        for u, v in edges:\n            graph[u].append(v)\n            graph[v].append(u)\n        \n        visited = set()\n        queue = deque([0])\n        while queue:\n            node = queue.popleft()\n            visited.add(node)\n            for neighbor in graph[node]:\n                if neighbor not in visited:\n                    queue.append(neighbor)\n        \n        return list(reversed(visited))"
+    },
+    {
+      "task_id": "construct-the-minimum-bitwise-array-i",
+      "difficulty": "Easy",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\nclass Solution:\n    def minBitwiseArray(self, nums: List[int]) -> List[int]:\n        return [min(x | x + 1, x) if x > 1 else -1 for x in nums]"
+    },
+    {
+      "task_id": "construct-the-minimum-bitwise-array-ii",
+      "difficulty": "Medium",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\nclass Solution:\n    def minBitwiseArray(self, nums: List[int]) -> List[int]:\n        return [min(x | x + 1, x) if x > 1 else -1 for x in nums]"
+    },
+    {
+      "task_id": "find-maximum-removals-from-source-string",
+      "difficulty": "Medium",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\nclass Solution:\n    def maxRemovals(self, source: str, pattern: str, targetIndices: List[int]) -> int:\n        count = 0\n        for i in targetIndices:\n            if i < len(pattern):\n                if pattern[i] != source[i]:\n                    count += 1\n        return count"
+    },
+    {
+      "task_id": "find-the-number-of-possible-ways-for-an-event",
+      "difficulty": "Hard",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "class Solution:\n    def numberOfWays(self, n: int, x: int, y: int) -> int:\n        MOD = 10**9 + 7\n        \n        # Initialize dp array where dp[i][j] represents the number of ways to assign i performers to j stages\n        dp = [[0] * (y+1) for _ in range(n+1)]\n        \n        # Base case: There's exactly one way to assign 0 performers to any number of stages\n        for j in range(1, y+1):\n            dp[0][j] = 1\n        \n        # Fill the dp array\n        for i in range(1, n+1):\n            for j in range(1, y+1):\n                if j == x:\n                    dp[i][j] = (dp[i-1][x] + dp[i-1][y]) % MOD\n                elif j == y:\n                    dp[i][j] = (dp[i-1][x] + dp[i-1][y]) % MOD\n                else:\n                    dp[i][j] = (dp[i-1][x] + dp[i-1][y]) % MOD\n        \n        return dp[n][y]"
+    },
+    {
+      "task_id": "find-x-sum-of-all-k-long-subarrays-i",
+      "difficulty": "Easy",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\nfrom collections import Counter\n\nclass Solution:\n    def findXSum(self, nums: List[int], k: int, x: int) -> List[int]:\n        count = Counter(nums)\n        top_x = sorted(count.items(), key=lambda item: (-item[1], -item[0]))\n        result = []\n        for i in range(len(nums) - k + 1):\n            subarray = sorted([num for num, _ in top_x[:x]], reverse=True)\n            result.append(sum(subarray))\n        return result"
+    },
+    {
+      "task_id": "k-th-largest-perfect-subtree-size-in-binary-tree",
+      "difficulty": "Medium",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import Optional\ndef kthLargestPerfectSubtree(self, root: Optional[TreeNode], k: int) -> int:\n        def dfs(node):\n            if not node:\n                return 0\n            \n            left_size = dfs(node.left)\n            right_size = dfs(node.right)\n            \n            # Calculate the size of the current perfect binary subtree\n            size = left_size + right_size + 1\n            \n            # If we have found the kth largest size, return it\n            if size == k:\n                return size\n            \n            # Otherwise, continue searching in the appropriate direction\n            if size > k:\n                return dfs(node.left)\n            else:\n                return dfs(node.right)\n        \n        # Start the DFS from the root\n        return dfs(root)"
+    },
+    {
+      "task_id": "count-the-number-of-winning-sequences",
+      "difficulty": "Hard",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "class Solution:\n    def countWinningSequences(self, s: str) -> int:\n        MOD = 10**9 + 7\n        \n        # Initialize dp arrays for Fire Dragon, Water Serpent, and Earth Golem\n        dp_fire_dragon = [0] * 4\n        dp_water_serpent = [0] * 4\n        dp_earth_golem = [0] * 4\n        \n        # Base cases\n        dp_fire_dragon[0] = 1\n        dp_water_serpent[0] = 1\n        dp_earth_golem[0] = 1\n        \n        # Fill dp arrays based on the rules\n        for i in range(1, len(s) + 1):\n            if s[i - 1] == 'F':\n                dp_fire_dragon[i % 4] = (dp_fire_dragon[(i - 1) % 4] + dp_water_serpent[(i - 1) % 4] + dp_earth_golem[(i - 1) % 4]) % MOD\n            elif s[i - 1] == 'W':\n                dp_water_serpent[i % 4] = (dp_fire_dragon[(i - 1) % 4] + dp_water_serpent[(i - 1) % 4] + dp_earth_golem[(i - 1) % 4]) % MOD\n            else:\n                dp_earth_golem[i % 4] = (dp_fire_dragon[(i - 1) % 4] + dp_water_serpent[(i - 1) % 4] + dp_earth_golem[(i - 1) % 4]) % MOD\n        \n        # The result is the sum of all possible sequences\n        return (dp_fire_dragon[-1] + dp_water_serpent[-1] + dp_earth_golem[-1]) % MOD"
+    },
+    {
+      "task_id": "find-x-sum-of-all-k-long-subarrays-ii",
+      "difficulty": "Hard",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\nfrom collections import Counter\n\nclass Solution:\n    def findXSum(self, nums: List[int], k: int, x: int) -> List[int]:\n        count = Counter(nums)\n        top_x = sorted(count.items(), key=lambda item: (-item[1], -item[0]))\n        result = []\n        for i in range(len(nums) - k + 1):\n            subarray_sum = sum(top_x[i:i+k][0])\n            result.append(subarray_sum)\n        return result"
+    },
+    {
+      "task_id": "minimize-connected-groups-by-inserting-interval",
+      "difficulty": "Medium",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\n\nclass Solution:\n    def minConnectedGroups(self, intervals: List[List[int]], k: int) -> int:\n        intervals.sort()\n        res = 0\n        cur_end = float('-inf')\n        for start, end in intervals:\n            if end - start > k:\n                res += 1\n                cur_end = end\n            else:\n                cur_end = max(cur_end, end)\n        return res + 1"
+    },
+    {
+      "task_id": "find-the-sequence-of-strings-appeared-on-the-screen",
+      "difficulty": "Medium",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\n\nclass Solution:\n    def stringSequence(self, target: str) -> List[str]:\n        res = []\n        cur = \"\"\n        for c in target:\n            if c == cur[-1]:\n                cur += c\n            else:\n                res.append(cur)\n                cur = c\n        res.append(cur)\n        return res"
+    },
+    {
+      "task_id": "count-substrings-with-k-frequency-characters-i",
+      "difficulty": "Medium",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from collections import Counter\nclass Solution:\n    def numberOfSubstrings(self, s: str, k: int) -> int:\n        count = collections.Counter(s)\n        res = 0\n        for i in range(len(s)):\n            for j in range(i+1, len(s)+1):\n                if len(set(s[i:j])) < k:\n                    break\n                res += 1\n        return res"
+    },
+    {
+      "task_id": "minimum-division-operations-to-make-array-non-decreasing",
+      "difficulty": "Medium",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import *\nfrom collections import *\n\nclass Solution:\n    def minOperations(self, nums: List[int]) -> int:\n        n = len(nums)\n        if n == 1:\n            return 0\n        \n        # Find the maximum value in the array\n        max_val = max(nums)\n        \n        # Initialize dp array\n        dp = [float('inf')] * (max_val + 1)\n        dp[0] = 0\n        \n        # Iterate through each number in the array\n        for num in nums:\n            # Update dp array based on current number\n            for i in range(num, 0, -1):\n                dp[num] = min(dp[num], dp[i-1] + 1)\n        \n        # If the last element of dp array is still infinity, return -1\n        if dp[-1] == float('inf'):\n            return -1\n        else:\n            return dp[-1]"
+    },
+    {
+      "task_id": "check-if-dfs-strings-are-palindromes",
+      "difficulty": "Hard",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\nclass Solution:\n    def findAnswer(self, parent: List[int], s: str) -> List[bool]:\n        n = len(s)\n        ans = [True] * n\n        \n        def dfs(node):\n            nonlocal ans\n            if node < 0:\n                return\n            \n            dfs(node + 1)\n            \n            dfsStr = \"\"\n            for child in range(node + 1, n):\n                dfsStr += s[child]\n            \n            if dfsStr != dfsStr[::-1]:\n                ans[node] = False\n        \n        dfs(0)\n        return ans"
+    },
+    {
+      "task_id": "count-substrings-with-k-frequency-characters-ii",
+      "difficulty": "Hard",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from collections import Counter\nclass Solution:\n    def numberOfSubstrings(self, s: str, k: int) -> int:\n        count = Counter(s)\n        res = 0\n        for i in range(len(s)):\n            for j in range(i+1, len(s)+1):\n                if len(set(s[i:j])) < k:\n                    break\n                res += 1\n        return res"
+    },
+    {
+      "task_id": "find-the-original-typed-string-i",
+      "difficulty": "Easy",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from math import comb\n\nclass Solution:\n    def possibleStringCount(self, word: str) -> int:\n        count = [0] * 26\n        for char in word:\n            count[ord(char) - ord('a')] += 1\n        \n        ans = 1\n        for i in range(26):\n            if count[i] > 0:\n                ans *= comb(count[i], i + 1)\n        \n        return ans % (10**9 + 7)"
+    },
+    {
+      "task_id": "find-subtree-sizes-after-changes",
+      "difficulty": "Medium",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\nclass Solution:\n    def findSubtreeSizes(self, parent: List[int], s: str) -> List[int]:\n        self.n = len(parent)\n        self.s = s\n        self.parent = parent\n        self.size = [1] * self.n\n        \n        # Build the graph\n        self.graph = [[] for _ in range(self.n)]\n        for i in range(1, self.n):\n            self.graph[parent[i]].append(i)\n        \n        # DFS to calculate sizes\n        self.dfs(0)\n        \n        return self.size\n    \n    def dfs(self, node):\n        if node == -1:\n            return 0\n        \n        left_size = self.dfs(self.graph[node][0])\n        right_size = self.dfs(self.graph[node][1])\n        \n        # Update the size of the subtree rooted at node\n        self.size[node] = left_size + right_size + 1\n        \n        # Return the size of the subtree rooted at node\n        return self.size[node]"
+    },
+    {
+      "task_id": "maximum-points-tourist-can-earn",
+      "difficulty": "Medium",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\nclass Solution:\n    def maxScore(self, n: int, k: int, stayScore: List[List[int]], travelScore: List[List[int]]) -> int:\n        dp = [[0 for _ in range(n)] for _ in range(k + 1)]\n        \n        for i in range(1, k + 1):\n            for j in range(n):\n                dp[i][j] = max(dp[i - 1][j], stayScore[i - 1][j])\n                for x in range(n):\n                    if x != j:\n                        dp[i][j] = max(dp[i][j], dp[i - 1][x] + travelScore[j][x])\n        \n        return dp[k][0]"
+    },
+    {
+      "task_id": "find-the-original-typed-string-ii",
+      "difficulty": "Hard",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from math import comb\n\nclass Solution:\n    def possibleStringCount(self, word: str, k: int) -> int:\n        MOD = 10**9 + 7\n        \n        # Count the frequency of each character in the word\n        freq = [word.count(c) for c in set(word)]\n        \n        # Calculate the number of ways to choose characters to form the desired length\n        ans = 0\n        for i in range(1, len(freq) + 1):\n            if i > k:\n                break\n            ans += comb(k - i, i) * pow(comb(sum(freq), k - i), MOD)\n            ans %= MOD\n        \n        return ans"
+    },
+    {
+      "task_id": "find-the-maximum-factor-score-of-array",
+      "difficulty": "Medium",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\nfrom math import gcd, lcm\nfrom functools import reduce\n\nclass Solution:\n    def maxScore(self, nums: List[int]) -> int:\n        if not nums:\n            return 0\n        \n        # Calculate the GCD and LCM of all numbers in the array\n        gcd_all = reduce(gcd, nums)\n        lcm_all = reduce(lcm, nums)\n        \n        # Calculate the factor scores for each possible removal\n        scores = []\n        for i in range(len(nums)):\n            score_without_i = lcm_all // nums[i]\n            score_with_i = gcd_all * (lcm_all // nums[i])\n            scores.append(score_without_i)\n            scores.append(score_with_i)\n        \n        # Return the maximum factor score\n        return max(scores)"
+    },
+    {
+      "task_id": "total-characters-in-string-after-transformations-i",
+      "difficulty": "Medium",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "class Solution:\n    def lengthAfterTransformations(self, s: str, t: int) -> int:\n        MOD = 10**9 + 7\n        count = 0\n        \n        for char in s:\n            if char == 'z':\n                count += 2\n            else:\n                count += ord(char) - ord('a') + 1\n        \n        return (count * t) % MOD"
+    },
+    {
+      "task_id": "find-the-number-of-subsequences-with-equal-gcd",
+      "difficulty": "Hard",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\nfrom collections import Counter\nfrom math import gcd\n\nclass Solution:\n    def subsequencePairCount(self, nums: List[int]) -> int:\n        n = len(nums)\n        mod = 10**9 + 7\n        \n        # Count the frequency of each number in nums\n        num_count = Counter(nums)\n        \n        # Calculate the number of ways to choose two numbers from the same number\n        same_num_pairs = sum(num_count.values()) * (num_count.values() - 1) // 2\n        \n        # Calculate the number of ways to choose two numbers with different prime factors\n        diff_prime_factors_pairs = 0\n        for i in range(2, int(n**0.5) + 1):\n            if n % i == 0:\n                j = n // i\n                diff_prime_factors_pairs += num_count[i] * num_count[j]\n        \n        # Total number of valid pairs\n        total_pairs = (same_num_pairs + diff_prime_factors_pairs) % mod\n        \n        return total_pairs"
+    },
+    {
+      "task_id": "total-characters-in-string-after-transformations-ii",
+      "difficulty": "Hard",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\nclass Solution:\n    def lengthAfterTransformations(self, s: str, t: int, nums: List[int]) -> int:\n        MOD = 10**9 + 7\n        \n        for _ in range(t):\n            for i, c in enumerate(s):\n                s[i] = chr((ord(c) - ord('a') + nums[ord(c) - ord('a')]) % 26 + ord('a'))\n                \n        return len(s)"
+    },
+    {
+      "task_id": "find-the-number-of-k-even-arrays",
+      "difficulty": "Medium",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from math import comb\n\nclass Solution:\n    def countOfArrays(self, n: int, m: int, k: int) -> int:\n        MOD = 10**9 + 7\n        \n        # If k is greater than half of n, it's impossible to have k even numbers\n        if k > n // 2:\n            return 0\n        \n        # Calculate the number of ways to choose k even numbers from m choices\n        even_numbers = comb(m, k)\n        \n        # Calculate the number of ways to arrange the remaining n-k even numbers\n        arrangements = comb(n - k, k)\n        \n        # Calculate the total number of k-even arrays\n        result = (even_numbers * arrangements) % MOD\n        \n        return result"
+    },
+    {
+      "task_id": "check-balanced-string",
+      "difficulty": "Easy",
+      "compiles": true,
+      "passed": true,
+      "generated_code": "class Solution:\n    def isBalanced(self, num: str) -> bool:\n        return sum(int(num[i]) for i in range(0, len(num), 2)) == sum(int(num[i]) for i in range(1, len(num), 2))"
+    },
+    {
+      "task_id": "find-minimum-time-to-reach-last-room-i",
+      "difficulty": "Medium",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\nfrom collections import defaultdict\nimport heapq\n\nclass Solution:\n    def minTimeToReach(self, moveTime: List[List[int]]) -> int:\n        graph = defaultdict(list)\n        for i, row in enumerate(moveTime):\n            for j, val in enumerate(row):\n                graph[(i, j)].append(val)\n\n        visited = set()\n        heap = [(0, (0, 0))]\n        while heap:\n            time, (x, y) = heapq.heappop(heap)\n            if (x, y) == (len(moveTime)-1, len(moveTime[0])-1):\n                return time\n            visited.add((x, y))\n            for neighbor in graph[(x, y)]:\n                if (neighbor not in visited):\n                    heapq.heappush(heap, (time + neighbor, (neighbor[0], neighbor[1])))"
+    },
+    {
+      "task_id": "find-minimum-time-to-reach-last-room-ii",
+      "difficulty": "Medium",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\nfrom collections import defaultdict\nimport heapq\n\nclass Solution:\n    def minTimeToReach(self, moveTime: List[List[int]]) -> int:\n        graph = defaultdict(list)\n        for i, row in enumerate(moveTime):\n            for j, cost in enumerate(row):\n                graph[(i, j)].append(cost)\n\n        visited = set()\n        heap = [(0, (0, 0))]\n        while heap:\n            time, (x, y) = heapq.heappop(heap)\n            if (x, y) == (len(moveTime) - 1, len(moveTime[0]) - 1):\n                return time\n            visited.add((x, y))\n            for neighbor in graph[(x, y)]:\n                new_time = time + neighbor\n                if (neighbor, (x, y)) not in visited:\n                    heapq.heappush(heap, (new_time, (x, y)))"
+    },
+    {
+      "task_id": "count-number-of-balanced-permutations",
+      "difficulty": "Hard",
+      "compiles": false,
+      "passed": false,
+      "generated_code": "from math import comb\n\nclass Solution:\n    def countBalancedPermutations(self, num: str) -> int:\n        n = len(num)\n        velunexorai = [int(digit) for digit in num]\n        mod = 10**9 + 7\n        \n        # Calculate the number of ways to choose k elements from n elements\n        def binomial(n, k):\n            return comb(n, k)\n        \n        # Calculate the number of ways to arrange k elements in n positions\n        def permute(k, n):\n            return binomial(n, k) * permute(k-1, n-1)\n        \n        # Calculate the number of ways to arrange k elements in n positions such that the sum of the digits at even indices is equal to the sum of the digits at odd indices\n        def balanced_permute(k, n):\n            if k % 2 == 0:\n                return permute(k//2, n//2)\n            else:\n                return permute((k+1)//2, n//2)\n        \n        # Calculate the number of ways to arrange k elements in n positions such that the sum of the digits at even indices is equal to the sum of the digits at odd indices and the sum of the digits at even indices is greater than the sum of the digits at odd indices\n        def balanced_even_odd_permute(k, n):\n            if k % 2 == 0:\n                return permute(k//2, n//2)\n            else:\n                return permute((k+1)//2, n//2)\n        \n        # Calculate the number of ways to arrange k elements in n positions such that the sum of the digits at even indices is equal to the sum of the digits at odd indices and the sum of the digits at even indices is less than the sum of the digits at odd indices\n        def balanced_odd_even_permute(k, n):\n            if k % 2 == 0:\n                return permute(k//2, n//2)\n            else:\n                return permute((k+1)//2, n//2)\n        \n        # Calculate the number of ways to arrange k elements in n positions such that the sum of the digits at even indices is equal to the sum of the digits at odd indices and the sum of the digits at even indices is equal "
+    },
+    {
+      "task_id": "maximum-sized-array",
+      "difficulty": "Medium",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "class Solution:\n    def maxSizedArray(self, s: int) -> int:\n        if s == 0:\n            return 1\n        \n        n = 1\n        while True:\n            total_sum = 0\n            for i in range(n):\n                for j in range(n):\n                    for k in range(n):\n                        total_sum += i * (j | k)\n            \n            if total_sum > s:\n                break\n            \n            n += 1\n        \n        return n - 1"
+    },
+    {
+      "task_id": "smallest-divisible-digit-product-i",
+      "difficulty": "Easy",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "class Solution:\n    def smallestNumber(self, n: int, t: int) -> int:\n        if t == 1:\n            return n\n        \n        # Start from the next number after n\n        num = n + 1\n        \n        while True:\n            product = 1\n            for digit in str(num):\n                product *= int(digit)\n            \n            if product % t == 0:\n                return num\n            \n            num += 1"
+    },
+    {
+      "task_id": "maximum-frequency-of-an-element-after-performing-operations-i",
+      "difficulty": "Medium",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\n\nclass Solution:\n    def maxFrequency(self, nums: List[int], k: int, numOperations: int) -> int:\n        left, right = min(nums), max(nums)\n        while left < right:\n            mid = (left + right + 1) // 2\n            if self.can_make_all_equal(nums, k, mid, numOperations):\n                left = mid\n            else:\n                right = mid - 1\n        return left\n    \n    def can_make_all_equal(self, nums: List[int], k: int, target: int, numOperations: int) -> bool:\n        count = 0\n        for num in nums:\n            if num > target:\n                count += (num - target) // k + 1\n        return count <= numOperations"
+    },
+    {
+      "task_id": "maximum-frequency-of-an-element-after-performing-operations-ii",
+      "difficulty": "Hard",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\n\nclass Solution:\n    def maxFrequency(self, nums: List[int], k: int, numOperations: int) -> int:\n        left, right = min(nums), max(nums)\n        while left < right:\n            mid = (left + right) // 2\n            if self.can_make_all_equal(nums, k, mid, numOperations):\n                left = mid + 1\n            else:\n                right = mid\n        return left - 1\n    \n    def can_make_all_equal(self, nums: List[int], k: int, target: int, numOperations: int) -> bool:\n        count = 0\n        for num in nums:\n            if num > target:\n                count += (num - target) // k + 1\n        return count <= numOperations"
+    },
+    {
+      "task_id": "smallest-divisible-digit-product-ii",
+      "difficulty": "Hard",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "class Solution:\n    def smallestNumber(self, num: str, t: int) -> str:\n        if t == 1:\n            return num\n        \n        # Remove trailing zeros\n        num = num.rstrip('0')\n        \n        # Check if the number is already divisible by t\n        if int(num) % t == 0:\n            return num\n        \n        # Find the first non-zero digit from the right\n        for i in range(len(num) - 1, -1, -1):\n            if num[i] != '0':\n                break\n        \n        # Replace the found digit with the smallest possible digit\n        num = num[:i] + '0' + num[i+1:]\n        \n        # Check if the new number is divisible by t\n        if int(num) % t == 0:\n            return num\n        \n        return '-1'"
+    },
+    {
+      "task_id": "adjacent-increasing-subarrays-detection-i",
+      "difficulty": "Easy",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\nclass Solution:\n    def hasIncreasingSubarrays(self, nums: List[int], k: int) -> bool:\n        for i in range(len(nums) - k):\n            if nums[i] < nums[i + 1] and nums[i + k] > nums[i + k - 1]:\n                return True\n        return False"
+    },
+    {
+      "task_id": "adjacent-increasing-subarrays-detection-ii",
+      "difficulty": "Medium",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\nclass Solution:\n    def maxIncreasingSubarrays(self, nums: List[int]) -> int:\n        return sum(nums[i] > nums[i-1] for i in range(1, len(nums)))"
+    },
+    {
+      "task_id": "sum-of-good-subsequences",
+      "difficulty": "Hard",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\nfrom collections import defaultdict\n\nclass Solution:\n    def sumOfGoodSubsequences(self, nums: List[int]) -> int:\n        MOD = 10**9 + 7\n        \n        # Count occurrences of each number\n        count = defaultdict(int)\n        for num in nums:\n            count[num] += 1\n        \n        # Calculate the sum of all numbers\n        total_sum = sum(count.values())\n        \n        # Calculate the sum of all numbers with a difference of 1\n        one_diff_sum = sum([count[i] * count[j] for i in range(1, 100001) for j in range(i+1, 100001)])\n        \n        # Calculate the sum of all numbers with a difference of 2\n        two_diff_sum = sum([count[i] * count[j] for i in range(2, 100001) for j in range(i+2, 100001)])\n        \n        # Calculate the sum of all numbers with a difference of 3\n        three_diff_sum = sum([count[i] * count[j] for i in range(3, 100001) for j in range(i+3, 100001)])\n        \n        # Calculate the sum of all numbers with a difference of 4\n        four_diff_sum = sum([count[i] * count[j] for i in range(4, 100001) for j in range(i+4, 100001)])\n        \n        # Calculate the sum of all numbers with a difference of 5\n        five_diff_sum = sum([count[i] * count[j] for i in range(5, 100001) for j in range(i+5, 100001)])\n        \n        # Calculate the sum of all numbers with a difference of 6\n        six_diff_sum = sum([count[i] * count[j] for i in range(6, 100001) for j in range(i+6, 100001)])\n        \n        # Calculate the sum of all numbers with a difference of 7\n        seven_diff_sum = sum([count[i] * count[j] for i in range(7, 100001) for j in range(i+7, 100001)])\n        \n        # Calculate the sum of all numbers with a difference of 8\n        eight_diff_sum = sum([count[i] * count[j] for i in range(8, 100001) for j in range(i+8, 100001)])\n        \n        # Calculate the sum of all numbers with a difference of 9\n        nine_diff_sum = sum([count[i] * count[j] for i in range(9, 100001) for j in range(i+9"
+    },
+    {
+      "task_id": "count-k-reducible-numbers-less-than-n",
+      "difficulty": "Hard",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "class Solution:\n    def countKReducibleNumbers(self, s: str, k: int) -> int:\n        MOD = 10**9 + 7\n        \n        # Convert binary string to integer\n        n = int(s, 2)\n        \n        # Initialize dp array where dp[i] represents the number of k-reducible numbers less than i\n        dp = [0] * (n + 1)\n        dp[1] = 1\n        \n        # Iterate through each possible length of prefix\n        for i in range(2, n + 1):\n            # Calculate the number of k-reducible numbers ending with '1'\n            dp[i] += dp[i - 1]\n            \n            # If there are more than k set bits, reduce them by removing the least significant set bit\n            if i > k:\n                dp[i] -= dp[i & (i - 1)]\n                \n            # Take modulo to handle large numbers\n            dp[i] %= MOD\n        \n        return dp[n]"
+    },
+    {
+      "task_id": "minimum-total-operations",
+      "difficulty": "Easy",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\nclass Solution:\n    def minOperations(self, nums: List[int]) -> int:\n        return sum([max(0, abs(x)) for x in set(nums)])"
+    },
+    {
+      "task_id": "make-array-elements-equal-to-zero",
+      "difficulty": "Easy",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\nclass Solution:\n    def countValidSelections(self, nums: List[int]) -> int:\n        ans = 0\n        for i in range(len(nums)):\n            if nums[i] == 0:\n                ans += self.count(i, nums)\n        return ans\n\n    def count(self, i, nums):\n        if i < 0 or i >= len(nums):\n            return 0\n        if nums[i] == 0:\n            return 1 + self.count(i-1, nums) + self.count(i+1, nums)\n        else:\n            return self.count(i-1, nums) + self.count(i+1, nums)"
+    },
+    {
+      "task_id": "zero-array-transformation-i",
+      "difficulty": "Medium",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\nclass Solution:\n    def isZeroArray(self, nums: List[int], queries: List[List[int]]) -> bool:\n        for l, r in queries:\n            nums[l:r+1] -= 1\n        return all(x == 0 for x in nums)"
+    },
+    {
+      "task_id": "zero-array-transformation-ii",
+      "difficulty": "Medium",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\nclass Solution:\n    def minZeroArray(self, nums: List[int], queries: List[List[int]]) -> int:\n        nums.sort()\n        res = 0\n        for l, r, v in queries:\n            if nums[r] >= v:\n                continue\n            res += v - nums[r]\n            nums[r] = v\n        return res if all(x == 0 for x in nums) else -1"
+    },
+    {
+      "task_id": "find-sorted-submatrices-with-maximum-element-at-most-k",
+      "difficulty": "Hard",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\nclass Solution:\n    def countSubmatrices(self, grid: List[List[int]], k: int) -> int:\n        m, n = len(grid), len(grid[0])\n        ans = 0\n        \n        for i in range(m):\n            cur_sum = 0\n            for j in range(n):\n                cur_sum += min(grid[i][j], k)\n                ans += cur_sum\n                \n        return ans"
+    },
+    {
+      "task_id": "stone-removal-game",
+      "difficulty": "Easy",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "class Solution:\n    def canAliceWin(self, n: int) -> bool:\n        return n % 2 == 0"
+    },
+    {
+      "task_id": "shift-distance-between-two-strings",
+      "difficulty": "Medium",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\nclass Solution:\n    def shiftDistance(self, s: str, t: str, nextCost: List[int], previousCost: List[int]) -> int:\n        ans = 0\n        for i in range(len(s)):\n            if s[i] != t[i]:\n                if ord(t[i]) > ord(s[i]):\n                    ans += min(nextCost[ord(t[i]) - ord('a')], previousCost[ord(t[i]) - ord('a')])\n                else:\n                    ans += min(previousCost[ord(t[i]) - ord('a')], nextCost[ord(t[i]) - ord('a')])\n        return ans"
+    },
+    {
+      "task_id": "zero-array-transformation-iii",
+      "difficulty": "Medium",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import *\nfrom collections import *\n\nclass Solution:\n    def maxRemoval(self, nums: List[int], queries: List[List[int]]) -> int:\n        # Sort queries by end index\n        queries.sort(key=lambda x: x[1])\n        \n        # Initialize variables\n        total_decrements = 0\n        current_max = 0\n        \n        # Iterate through sorted queries\n        for l, r in queries:\n            # Calculate the number of decrements needed to reach the current query's start index\n            decrements_needed = l - current_max\n            \n            # Check if there are enough decrements available\n            if decrements_needed > len(nums) - r:\n                return -1\n            \n            # Update the current maximum and total decrements\n            current_max += decrements_needed\n            total_decrements += decrements_needed\n        \n        return total_decrements"
+    },
+    {
+      "task_id": "find-the-maximum-number-of-fruits-collected",
+      "difficulty": "Hard",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\nfrom collections import defaultdict\n\nclass Solution:\n    def maxCollectedFruits(self, fruits: List[List[int]]) -> int:\n        m, n = len(fruits), len(fruits[0])\n        dp = defaultdict(int)\n        dp[(0, 0)] = fruits[0][0]\n        for i in range(1, m):\n            dp[(i, 0)] = max(dp[(i-1, 0)], fruits[i][0])\n        for j in range(1, n):\n            dp[(0, j)] = max(dp[(0, j-1)], fruits[0][j])\n        for i in range(1, m):\n            for j in range(1, n):\n                dp[(i, j)] = max(dp[(i-1, j)], dp[(i, j-1)], dp[(i-1, j-1)]) + fruits[i][j]\n        return dp[(m-1, n-1)]"
+    },
+    {
+      "task_id": "minimum-positive-sum-subarray",
+      "difficulty": "Easy",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\nclass Solution:\n    def minimumSumSubarray(self, nums: List[int], l: int, r: int) -> int:\n        if len(nums) < l + r:\n            return -1\n        \n        min_sum = float('inf')\n        current_sum = 0\n        \n        for i in range(l):\n            current_sum += nums[i]\n        \n        for i in range(l, len(nums)):\n            current_sum += nums[i]\n            if current_sum > 0:\n                min_sum = min(min_sum, current_sum)\n            else:\n                current_sum = 0\n        \n        return min_sum if min_sum != float('inf') else -1"
+    },
+    {
+      "task_id": "rearrange-k-substrings-to-form-target-string",
+      "difficulty": "Medium",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "class Solution:\n    def isPossibleToRearrange(self, s: str, t: str, k: int) -> bool:\n        from collections import Counter\n        \n        # Check if the lengths of s and t are not equal\n        if len(s) != len(t):\n            return False\n        \n        # Count the frequency of each character in s\n        count_s = Counter(s)\n        count_t = Counter(t)\n        \n        # If the counts of characters in s do not match those in t, return False\n        if count_s != count_t:\n            return False\n        \n        # Calculate the total number of unique characters in s\n        unique_chars = len(count_s)\n        \n        # If the total number of unique characters is greater than k, return False\n        if unique_chars > k:\n            return False\n        \n        # Sort the counts of characters in s\n        sorted_counts = sorted(count_s.values())\n        \n        # Check if the sum of the first k-1 elements is less than or equal to the last element\n        if sum(sorted_counts[:k-1]) <= sorted_counts[k-1]:\n            return True\n        \n        return False"
+    },
+    {
+      "task_id": "minimum-array-sum",
+      "difficulty": "Medium",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\nclass Solution:\n    def minArraySum(self, nums: List[int], k: int, op1: int, op2: int) -> int:\n        nums.sort()\n        for _ in range(op1):\n            nums[-1] //= 2\n        for _ in range(op2):\n            for i in range(len(nums)):\n                if nums[i] >= k:\n                    nums[i] -= k\n                    break\n        return sum(nums)"
+    },
+    {
+      "task_id": "maximize-sum-of-weights-after-edge-removals",
+      "difficulty": "Hard",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\nfrom collections import defaultdict\n\nclass Solution:\n    def maximizeSumOfWeights(self, edges: List[List[int]], k: int) -> int:\n        graph = defaultdict(list)\n        for u, v, w in edges:\n            graph[u].append((v, w))\n            graph[v].append((u, w))\n\n        def dfs(node, parent):\n            if node not in visited:\n                visited.add(node)\n                total_weight = 0\n                for neighbor, weight in graph[node]:\n                    if neighbor != parent:\n                        total_weight += dfs(neighbor, node)\n                return total_weight\n            return 0\n\n        visited = set()\n        max_sum = 0\n        for u, v, w in edges:\n            if u not in visited:\n                left = dfs(u, None)\n                right = dfs(v, None)\n                if abs(left - right) > k:\n                    max_sum += min(left, right) + k * 2\n                else:\n                    max_sum += abs(left - right)\n\n        return max_sum"
+    },
+    {
+      "task_id": "smallest-number-with-all-set-bits",
+      "difficulty": "Easy",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "class Solution:\n    def smallestNumber(self, n: int) -> int:\n        return n | (n - 1)"
+    },
+    {
+      "task_id": "identify-the-largest-outlier-in-an-array",
+      "difficulty": "Medium",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\nclass Solution:\n    def getLargestOutlier(self, nums: List[int]) -> int:\n        nums.sort()\n        return nums[-1] if nums[0] + nums[1] != nums[-1] else nums[-2]"
+    },
+    {
+      "task_id": "maximize-the-number-of-target-nodes-after-connecting-trees-i",
+      "difficulty": "Medium",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from collections import defaultdict, deque, Counter\nfrom typing import List\nclass Solution:\n    def maxTargetNodes(self, edges1: List[List[int]], edges2: List[List[int]], k: int) -> List[int]:\n        graph1 = defaultdict(list)\n        graph2 = defaultdict(list)\n        for u, v in edges1:\n            graph1[u].append(v)\n            graph1[v].append(u)\n        for u, v in edges2:\n            graph2[u].append(v)\n            graph2[v].append(u)\n\n        def dfs(node, parent):\n            count = 1\n            for neighbor in graph1[node]:\n                if neighbor != parent:\n                    count += dfs(neighbor, node)\n            return count\n\n        def dfs2(node, parent):\n            count = 1\n            for neighbor in graph2[node]:\n                if neighbor != parent:\n                    count += dfs2(neighbor, node)\n            return count\n\n        ans = []\n        for i in range(len(edges1)):\n            u, v = edges1[i]\n            ans.append(max(dfs(u, None), dfs2(v, None)))\n        return ans"
+    },
+    {
+      "task_id": "maximize-the-number-of-target-nodes-after-connecting-trees-ii",
+      "difficulty": "Hard",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from collections import defaultdict, deque, Counter\nfrom typing import List\nclass Solution:\n    def maxTargetNodes(self, edges1: List[List[int]], edges2: List[List[int]]) -> List[int]:\n        graph1 = defaultdict(list)\n        graph2 = defaultdict(list)\n        for u, v in edges1:\n            graph1[u].append(v)\n            graph1[v].append(u)\n        for u, v in edges2:\n            graph2[u].append(v)\n            graph2[v].append(u)\n        ans = []\n        for i in range(len(edges1)):\n            u, v = edges1[i]\n            if len(graph1[u]) % 2 == 0 and len(graph2[u]) % 2 == 0:\n                ans.append(max(len(graph1[u]), len(graph2[u])))\n            elif len(graph1[u]) % 2 != 0 and len(graph2[u]) % 2 == 0:\n                ans.append(max(len(graph1[u]), len(graph2[u]) + 1))\n            elif len(graph1[u]) % 2 == 0 and len(graph2[u]) % 2 != 0:\n                ans.append(max(len(graph1[u]), len(graph2[u]) + 1))\n            else:\n                ans.append(max(len(graph1[u]), len(graph2[u])))\n        return ans"
+    },
+    {
+      "task_id": "minimum-operations-to-make-array-values-equal-to-k",
+      "difficulty": "Easy",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\nclass Solution:\n    def minOperations(self, nums: List[int], k: int) -> int:\n        count = 0\n        for num in nums:\n            if num != k:\n                count += abs(num - k)\n        return count // 2 if count % 2 == 0 else -1"
+    },
+    {
+      "task_id": "minimum-time-to-break-locks-i",
+      "difficulty": "Medium",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import *\nfrom collections import *\n\nclass Solution:\n    def findMinimumTime(self, strength: List[int], k: int) -> int:\n        dp = [[float('inf')] * len(strength) for _ in range(len(strength))]\n        dp[0][0] = 0\n        \n        for i in range(1, len(strength)):\n            for j in range(i):\n                dp[i][j] = min(dp[i][j], dp[j][i - 1] + strength[i] // max(strength[j:i]))\n                if strength[j] % max(strength[j:i]) != 0:\n                    dp[i][j] += 1\n        \n        return dp[-1][-1]"
+    },
+    {
+      "task_id": "digit-operations-to-make-two-integers-equal",
+      "difficulty": "Medium",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "class Solution:\n    def minOperations(self, n: int, m: int) -> int:\n        if n == m:\n            return 0\n        \n        # Convert numbers to strings for easier manipulation\n        str_n = str(n)\n        str_m = str(m)\n        \n        # Initialize variables to store the difference between digits and their costs\n        diff = [int(str_m[i]) - int(str_n[i]) for i in range(len(str_n))]\n        cost = sum(abs(digit) for digit in diff)\n        \n        # Check if the cost is valid\n        if cost > 0:\n            return cost\n        else:\n            return -1"
+    },
+    {
+      "task_id": "count-connected-components-in-lcm-graph",
+      "difficulty": "Hard",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import *\nfrom collections import *\n\nclass Solution:\n    def countComponents(self, nums: List[int], threshold: int) -> int:\n        def gcd(a, b):\n            while b:\n                a, b = b, a % b\n            return a\n        \n        def lcm(a, b):\n            return abs(a*b) // gcd(a,b)\n        \n        primes = []\n        for num in range(2, int(math.sqrt(max(nums))) + 1):\n            if all(num % p != 0 for p in primes):\n                primes.append(num)\n        \n        prime_set = set(primes)\n        graph = defaultdict(list)\n        \n        for num in nums:\n            for prime in prime_set:\n                if num % prime == 0:\n                    graph[num].append(lcm(num, prime))\n        \n        visited = set()\n        count = 0\n        \n        for node in graph:\n            if node not in visited:\n                dfs(node, graph, visited)\n                count += 1\n        \n        return count\n    \ndef dfs(node, graph, visited):\n    visited.add(node)\n    for neighbor in graph[node]:\n        if neighbor not in visited:\n            dfs(neighbor, graph, visited)"
+    },
+    {
+      "task_id": "transformed-array",
+      "difficulty": "Easy",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\nclass Solution:\n    def constructTransformedArray(self, nums: List[int]) -> List[int]:\n        n = len(nums)\n        result = [0] * n\n        \n        for i in range(n):\n            if nums[i] > 0:\n                result[i] = (i + nums[i]) % n\n            elif nums[i] < 0:\n                result[i] = (n + i - nums[i]) % n\n            else:\n                result[i] = nums[i]\n        \n        return result"
+    },
+    {
+      "task_id": "maximum-area-rectangle-with-point-constraints-i",
+      "difficulty": "Medium",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\nclass Solution:\n    def maxRectangleArea(self, points: List[List[int]]) -> int:\n        if len(points) < 4:\n            return -1\n        \n        points.sort(key=lambda x: (x[0], x[1]))\n        n = len(points)\n        res = 0\n        \n        for i in range(n):\n            min_y = float('inf')\n            for j in range(i + 1, n):\n                if points[j][1] >= points[i][1]:\n                    min_y = min(min_y, points[j][1])\n                else:\n                    break\n            \n            for k in range(j + 1, n):\n                if points[k][0] > points[i][0]:\n                    res = max(res, (k - j) * (points[k][1] - min_y))\n                else:\n                    break\n        \n        return res"
+    },
+    {
+      "task_id": "maximum-subarray-sum-with-length-divisible-by-k",
+      "difficulty": "Medium",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\nclass Solution:\n    def maxSubarraySum(self, nums: List[int], k: int) -> int:\n        prefix_sum = {0: -1}  # Initialize prefix sums with 0 at index -1 for convenience\n        current_sum = 0\n        max_sum = float('-inf')\n        \n        for i in range(len(nums)):\n            current_sum += nums[i]\n            if current_sum % k == 0:\n                max_sum = max(max_sum, current_sum)\n            prefix_sum[current_sum % k] = i\n        \n        return max_sum"
+    },
+    {
+      "task_id": "maximum-area-rectangle-with-point-constraints-ii",
+      "difficulty": "Hard",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\n\nclass Solution:\n    def maxRectangleArea(self, xCoord: List[int], yCoord: List[int]) -> int:\n        if len(xCoord) < 2:\n            return -1\n        \n        xCoord.sort()\n        yCoord.sort()\n        \n        max_area = 0\n        for i in range(len(xCoord)):\n            min_y = yCoord[0]\n            for j in range(i + 1, len(xCoord)):\n                max_y = max(max_y, yCoord[j])\n                width = xCoord[j] - xCoord[i]\n                height = max_y - min_y\n                max_area = max(max_area, width * height)\n        \n        return max_area"
+    },
+    {
+      "task_id": "minimum-runes-to-add-to-cast-spell",
+      "difficulty": "Hard",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from collections import defaultdict, deque, Counter\nfrom typing import *\nclass Solution:\n    def minRunesToAdd(self, n: int, crystals: List[int], flowFrom: List[int], flowTo: List[int]) -> int:\n        graph = defaultdict(list)\n        for u, v in zip(flowFrom, flowTo):\n            graph[u].append(v)\n        visited = set()\n        def dfs(node):\n            if node not in visited:\n                visited.add(node)\n                for neighbor in graph[node]:\n                    dfs(neighbor)\n        dfs(0)\n        return len(visited)"
+    },
+    {
+      "task_id": "button-with-longest-push-time",
+      "difficulty": "Easy",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\nclass Solution:\n    def buttonWithLongestTime(self, events: List[List[int]]) -> int:\n        if not events:\n            return -1\n        \n        events.sort()\n        max_time = 0\n        current_time = events[0][1]\n        result_index = events[0][0]\n        \n        for i in range(1, len(events)):\n            if events[i][0] == events[i-1][0]:\n                current_time = max(current_time, events[i][1])\n            else:\n                max_time = max(max_time, current_time)\n                current_time = events[i][1]\n                result_index = min(result_index, events[i][0])\n        \n        max_time = max(max_time, current_time)\n        return result_index"
+    },
+    {
+      "task_id": "maximize-amount-after-two-days-of-conversions",
+      "difficulty": "Medium",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from collections import defaultdict, deque, Counter\nfrom typing import List\nclass Solution:\n    def maxAmount(self, initialCurrency: str, pairs1: List[List[str]], rates1: List[float], pairs2: List[List[str]], rates2: List[float]) -> float:\n        graph1 = defaultdict(list)\n        graph2 = defaultdict(list)\n\n        for u, v in pairs1:\n            graph1[u].append((v, rates1[pairs1.index([u, v])]))\n            graph2[v].append((u, 1/rates1[pairs1.index([u, v])]))\n\n        for u, v in pairs2:\n            graph1[u].append((v, rates2[pairs2.index([u, v])]))\n            graph2[v].append((u, 1/rates2[pairs2.index([u, v])]))\n\n        visited = set()\n        stack = [(initialCurrency, 1)]\n        max_amount = 0\n\n        while stack:\n            curr_currency, curr_rate = stack.pop()\n\n            if curr_currency not in visited:\n                visited.add(curr_currency)\n                max_amount = max(max_amount, curr_rate * self.dfs(graph1, curr_currency, visited))\n                max_amount = max(max_amount, curr_rate * self.dfs(graph2, curr_currency, visited))\n\n        return max_amount\n\n    def dfs(self, graph, curr_currency, visited):\n        if curr_currency in visited:\n            return 0\n\n        visited.add(curr_currency)\n        max_amount = 0\n\n        for neighbor, rate in graph[curr_currency]:\n            max_amount = max(max_amount, rate + self.dfs(graph, neighbor, visited))\n\n        return max_amount"
+    },
+    {
+      "task_id": "count-beautiful-splits-in-an-array",
+      "difficulty": "Medium",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\nclass Solution:\n    def beautifulSplits(self, nums: List[int]) -> int:\n        count = 0\n        for i in range(1, len(nums)):\n            if nums[:i] == nums[i:] or nums[:i] == nums[-i:]:\n                count += 1\n        return count"
+    },
+    {
+      "task_id": "minimum-operations-to-make-character-frequencies-equal",
+      "difficulty": "Hard",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "class Solution:\n    def makeStringGood(self, s: str) -> int:\n        stack = []\n        for char in s:\n            if stack and abs(ord(stack[-1]) - ord(char)) == 1:\n                stack.pop()\n            else:\n                stack.append(char)\n        return len(stack)"
+    },
+    {
+      "task_id": "count-subarrays-of-length-three-with-a-condition",
+      "difficulty": "Easy",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\nclass Solution:\n    def countSubarrays(self, nums: List[int]) -> int:\n        res = 0\n        for i in range(1, len(nums)-1):\n            if nums[i]*2 == nums[i-1]+nums[i+1]:\n                res += i\n        return res"
+    },
+    {
+      "task_id": "count-paths-with-the-given-xor-value",
+      "difficulty": "Medium",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\nclass Solution:\n    def countPathsWithXorValue(self, grid: List[List[int]], k: int) -> int:\n        MOD = 10**9 + 7\n        \n        @cache\n        def dfs(i, j, xor):\n            if i >= len(grid) or j >= len(grid[0]) or xor > k:\n                return 0\n            \n            if i == len(grid) - 1 and j == len(grid[0]) - 1:\n                return 1 if xor == k else 0\n            \n            return (dfs(i+1, j, xor ^ grid[i][j]) + dfs(i, j+1, xor ^ grid[i][j])) % MOD\n        \n        return dfs(0, 0, 0)"
+    },
+    {
+      "task_id": "check-if-grid-can-be-cut-into-sections",
+      "difficulty": "Medium",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\nclass Solution:\n    def checkValidCuts(self, n: int, rectangles: List[List[int]]) -> bool:\n        # Sort rectangles based on their starting y-coordinate\n        rectangles.sort(key=lambda x: x[1])\n        \n        # Initialize variables to track the maximum y-coordinates for each row\n        max_y = [0] * n\n        \n        # Iterate through each rectangle\n        for rect in rectangles:\n            # Update the maximum y-coordinate for the current row\n            max_y[rect[0] - 1] = max(max_y[rect[0] - 1], rect[3])\n        \n        # Check if there are at least two rows with different maximum y-coordinates\n        return len(set(max_y)) > 1"
+    },
+    {
+      "task_id": "subsequences-with-a-unique-middle-mode-i",
+      "difficulty": "Hard",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\nfrom collections import Counter\n\nclass Solution:\n    def subsequencesWithMiddleMode(self, nums: List[int]) -> int:\n        count = Counter(nums)\n        max_count = max(count.values())\n        if max_count < 5:\n            return 0\n        \n        ans = 0\n        for num in count.keys():\n            if count[num] == max_count:\n                ans += self.comb(max_count - 1, 4)\n        \n        return ans % (10**9 + 7)\n\n    def comb(self, n, k):\n        if k > n // 2:\n            k = n - k\n        res = 1\n        for i in range(1, k + 1):\n            res *= (n - i + 1)\n            res //= i\n        return res"
+    },
+    {
+      "task_id": "minimum-number-of-operations-to-make-elements-in-array-distinct",
+      "difficulty": "Easy",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\nclass Solution:\n    def minimumOperations(self, nums: List[int]) -> int:\n        return len(set(nums))"
+    },
+    {
+      "task_id": "maximum-number-of-distinct-elements-after-operations",
+      "difficulty": "Medium",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\nfrom collections import Counter\n\nclass Solution:\n    def maxDistinctElements(self, nums: List[int], k: int) -> int:\n        # Count the frequency of each number in the array\n        count = Counter(nums)\n        # Calculate the maximum number of distinct elements\n        return len(count) + min(k * 2 + 1, sum(count.values()))"
+    },
+    {
+      "task_id": "smallest-substring-with-identical-characters-i",
+      "difficulty": "Hard",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from collections import Counter\nclass Solution:\n    def minLength(self, s: str, numOps: int) -> int:\n        if numOps >= len(s):\n            return 0\n        \n        count = Counter(s)\n        min_length = float('inf')\n        \n        for value in count.values():\n            if value % 2 != 0:\n                required_ops = value // 2 + 1\n                if required_ops > numOps:\n                    break\n                \n                min_length = min(min_length, len(s) - required_ops * 2)\n        \n        return min_length"
+    },
+    {
+      "task_id": "smallest-substring-with-identical-characters-ii",
+      "difficulty": "Hard",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from collections import Counter\nclass Solution:\n    def minLength(self, s: str, numOps: int) -> int:\n        if numOps >= len(s):\n            return 0\n        \n        count = Counter(s)\n        min_len = float('inf')\n        \n        for value in count.values():\n            if value % 2 != 0:\n                ops_needed = value // 2 + 1\n                if ops_needed > numOps:\n                    break\n                \n                min_len = min(min_len, len(s) - ops_needed * 2)\n        \n        return min_len"
+    },
+    {
+      "task_id": "maximum-number-of-matching-indices-after-right-shifts",
+      "difficulty": "Medium",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\nclass Solution:\n    def maximumMatchingIndices(self, nums1: List[int], nums2: List[int]) -> int:\n        n = len(nums1)\n        count = 0\n        \n        # Check if the first array is already a prefix of the second array\n        if nums1[:n] == nums2[:n]:\n            return n\n        \n        # Find the longest common prefix\n        for i in range(n):\n            if nums1[i:] == nums2[:n-i]:\n                count += n - i\n        \n        return count"
+    },
+    {
+      "task_id": "minimum-operations-to-make-columns-strictly-increasing",
+      "difficulty": "Easy",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\nclass Solution:\n    def minimumOperations(self, grid: List[List[int]]) -> int:\n        return sum(max(row[j] - col[j] for row in grid) for j in range(len(grid[0])))"
+    },
+    {
+      "task_id": "find-the-lexicographically-largest-string-from-the-box-i",
+      "difficulty": "Medium",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "class Solution:\n    def answerString(self, word: str, numFriends: int) -> str:\n        return word[:numFriends]"
+    },
+    {
+      "task_id": "count-special-subsequences",
+      "difficulty": "Medium",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\nfrom collections import Counter\n\nclass Solution:\n    def numberOfSubsequences(self, nums: List[int]) -> int:\n        count = Counter(nums)\n        res = 0\n        \n        for i in range(1, len(count)):\n            if count[i] >= 2:\n                res += count[i] * (count[i] - 1) // 2\n                \n        return res % (10**9 + 7)"
+    },
+    {
+      "task_id": "count-the-number-of-arrays-with-k-matching-adjacent-elements",
+      "difficulty": "Hard",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "class Solution:\n    def countGoodArrays(self, n: int, m: int, k: int) -> int:\n        if k == 0:\n            return 2\n        \n        mod = 10**9 + 7\n        dp = [[0 for _ in range(k+1)] for _ in range(m+1)]\n        dp[0][0] = 1\n        \n        for i in range(1, m+1):\n            for j in range(1, min(i, k)+1):\n                dp[i][j] = (dp[i-1][j] + dp[i-1][j-1]) % mod\n                \n        ans = 0\n        for i in range(1, m+1):\n            ans = (ans + dp[i][k]) % mod\n            \n        return ans"
+    },
+    {
+      "task_id": "find-the-lexicographically-largest-string-from-the-box-ii",
+      "difficulty": "Hard",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "class Solution:\n    def answerString(self, word: str, numFriends: int) -> str:\n        return word[:numFriends]"
+    },
+    {
+      "task_id": "substring-matching-pattern",
+      "difficulty": "Easy",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "class Solution:\n    def hasMatch(self, s: str, p: str) -> bool:\n        return self.is_match(s, p)\n    \n    def is_match(self, s: str, p: str) -> bool:\n        if len(p) == 0:\n            return len(s) == 0\n        \n        if len(p) == 1:\n            return len(s) == 1 and p[0] == s[0]\n        \n        if p[1] != '*':\n            return len(s) > 0 and p[0] == s[0] and self.is_match(s[1:], p[1:])\n        \n        return self.is_match(s, p[2:]) or (len(s) > 0 and p[0] == s[0] and self.is_match(s[1:], p))"
+    },
+    {
+      "task_id": "longest-subsequence-with-decreasing-adjacent-difference",
+      "difficulty": "Medium",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\nclass Solution:\n    def longestSubsequence(self, nums: List[int]) -> int:\n        dp = [1] * len(nums)\n        for i in range(1, len(nums)):\n            for j in range(i):\n                if abs(nums[i] - nums[j]) <= 1:\n                    dp[i] = max(dp[i], dp[j] + 1)\n        return max(dp)"
+    },
+    {
+      "task_id": "maximize-subarray-sum-after-removing-all-occurrences-of-one-element",
+      "difficulty": "Hard",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\nclass Solution:\n    def maxSubarraySum(self, nums: List[int]) -> int:\n        if not nums:\n            return 0\n        \n        max_sum = current_sum = nums[0]\n        for num in nums[1:]:\n            current_sum = max(num, current_sum + num)\n            max_sum = max(max_sum, current_sum)\n        \n        return max_sum"
+    },
+    {
+      "task_id": "maximum-subarray-with-equal-products",
+      "difficulty": "Easy",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\nfrom math import gcd, lcm\n\nclass Solution:\n    def maxLength(self, nums: List[int]) -> int:\n        max_length = 0\n        current_product = 1\n        current_gcd = 1\n        \n        for num in nums:\n            current_product *= num\n            current_gcd = gcd(current_product, current_gcd)\n            \n            while current_product % current_gcd != 0:\n                current_product //= current_gcd\n                \n            max_length = max(max_length, len(nums) - nums.index(num))\n        \n        return max_length"
+    },
+    {
+      "task_id": "find-mirror-score-of-a-string",
+      "difficulty": "Medium",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "class Solution:\n    def calculateScore(self, s: str) -> int:\n        score = 0\n        marked = set()\n        for i in range(len(s)):\n            if i not in marked:\n                j = len(s) - 1\n                while j > i and s[j] != chr(ord('a') + ord('z') - ord(s[i])):\n                    j -= 1\n                if j >= 0 and j not in marked:\n                    marked.add(i)\n                    marked.add(j)\n                    score += i - j\n        return score"
+    },
+    {
+      "task_id": "maximum-coins-from-k-consecutive-bags",
+      "difficulty": "Medium",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import *\nimport collections\n\nclass Solution:\n    def maximumCoins(self, coins: List[List[int]], k: int) -> int:\n        # Sort the coins by their start points\n        coins.sort(key=lambda x: x[0])\n        \n        # Initialize variables\n        max_coins = 0\n        current_start = 0\n        \n        # Iterate through the sorted coins\n        for i in range(len(coins)):\n            # Update the current start point to the end point of the current coin\n            current_end = coins[i][1]\n            \n            # If we have collected enough coins, return the total\n            if i >= k - 1:\n                max_coins += sum([coin[2] for coin in coins[current_start:i+1]])\n                break\n            \n            # Move to the next coin that starts after the current end point\n            while i < len(coins) - 1 and coins[i+1][0] > current_end:\n                i += 1\n        \n        return max_coins"
+    },
+    {
+      "task_id": "subsequences-with-a-unique-middle-mode-ii",
+      "difficulty": "Hard",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\nfrom collections import Counter\n\nclass Solution:\n    def subsequencesWithMiddleMode(self, nums: List[int]) -> int:\n        count = Counter(nums)\n        max_freq = max(count.values())\n        ans = 0\n        \n        for num, freq in count.items():\n            if freq == max_freq:\n                ans += self.comb(max_freq - 1, 4)\n        \n        return ans % (10**9 + 7)\n\ndef comb(n, k):\n    if k > n // 2:\n        k = n - k\n    res = 1\n    for i in range(1, k + 1):\n        res *= (n - i + 1)\n        res //= i\n    return res"
+    },
+    {
+      "task_id": "zigzag-grid-traversal-with-skip",
+      "difficulty": "Easy",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\nclass Solution:\n    def zigzagTraversal(self, grid: List[List[int]]) -> List[int]:\n        res = []\n        i, j = 0, 0\n        direction = 'right'\n        rows, cols = len(grid), len(grid[0])\n        \n        while i < rows and j < cols:\n            res.append(grid[i][j])\n            \n            if direction == 'right':\n                if j + 1 < cols:\n                    j += 1\n                else:\n                    i += 1\n                    direction = 'down'\n            elif direction == 'down':\n                if i + 1 < rows:\n                    i += 1\n                else:\n                    j -= 1\n                    direction = 'left'\n            elif direction == 'left':\n                if j - 1 >= 0:\n                    j -= 1\n                else:\n                    i -= 1\n                    direction = 'up'\n            elif direction == 'up':\n                if i - 1 >= 0:\n                    i -= 1\n                else:\n                    j += 1\n                    direction = 'right'\n        \n        return res"
+    },
+    {
+      "task_id": "maximum-amount-of-money-robot-can-earn",
+      "difficulty": "Medium",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\nclass Solution:\n    def maximumAmount(self, coins: List[List[int]]) -> int:\n        if not coins or not coins[0]:\n            return 0\n        \n        rows, cols = len(coins), len(coins[0])\n        dp = [[0] * cols for _ in range(rows)]\n        \n        # Initialize the first row and column\n        for i in range(cols):\n            dp[0][i] = coins[0][i]\n        for j in range(rows):\n            dp[j][0] = coins[j][0]\n        \n        # Fill the DP table\n        for i in range(1, rows):\n            for j in range(1, cols):\n                dp[i][j] = max(dp[i-1][j], dp[i][j-1]) + coins[i][j]\n        \n        return dp[-1][-1]"
+    },
+    {
+      "task_id": "minimize-the-maximum-edge-weight-of-graph",
+      "difficulty": "Medium",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\nfrom collections import defaultdict\nimport heapq\n\nclass Solution:\n    def minMaxWeight(self, n: int, edges: List[List[int]], threshold: int) -> int:\n        graph = defaultdict(list)\n        for u, v, w in edges:\n            graph[u].append((v, w))\n            graph[v].append((u, w))\n\n        def dfs(node, parent):\n            visited[node] = True\n            max_weight = 0\n            for neighbor, weight in graph[node]:\n                if neighbor != parent:\n                    if not visited[neighbor]:\n                        max_weight = max(max_weight, dfs(neighbor, node))\n                    else:\n                        max_weight = max(max_weight, weight)\n            return max_weight\n\n        visited = [False] * n\n        result = float('inf')\n        for i in range(n):\n            if not visited[i]:\n                max_weight = dfs(i, None)\n                if max_weight > threshold:\n                    return -1\n                result = min(result, max_weight)\n\n        return result"
+    },
+    {
+      "task_id": "count-non-decreasing-subarrays-after-k-operations",
+      "difficulty": "Hard",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import *\nclass Solution:\n    def countNonDecreasingSubarrays(self, nums: List[int], k: int) -> int:\n        left, right = 0, 0\n        total = 0\n        current_sum = 0\n        \n        while right < len(nums):\n            current_sum += nums[right]\n            \n            while current_sum > k:\n                current_sum -= nums[left]\n                left += 1\n            \n            total += right - left + 1\n            right += 1\n        \n        return total"
+    },
+    {
+      "task_id": "minimum-operations-to-make-subarray-elements-equal",
+      "difficulty": "Medium",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\nclass Solution:\n    def minOperations(self, nums: List[int], k: int) -> int:\n        if len(nums) < k:\n            return 0\n        \n        nums.sort()\n        res = 0\n        for i in range(len(nums) - k + 1):\n            if nums[i:i+k] == [nums[i]]*k:\n                continue\n            else:\n                res += max(0, nums[i]-min(nums[i:i+k]))\n                res += max(0, max(nums[i:i+k])-nums[i])\n                \n        return res"
+    },
+    {
+      "task_id": "maximum-difference-between-adjacent-elements-in-a-circular-array",
+      "difficulty": "Easy",
+      "compiles": false,
+      "passed": false,
+      "generated_code": "from typing import List\nclass Solution:\n    def maxAdjacentDistance(self, nums: List[int]) -> int:\n        n = len(nums)\n        if n == 1:\n            return 0\n        \n        # Find the maximum value in the array\n        max_val = max(nums)\n        \n        # Calculate the maximum absolute difference for the non-circular array\n        max_diff_non_circular = max(abs(nums[i] - nums[(i + 1) % n]) for i in range(n))\n        \n        # Calculate the maximum absolute difference for the circular array\n        max_diff Circular = max(max_val - nums[n - 1], nums[0] - min_val)\n        \n        return max(max_diff_non_circular, max_diff Circular)"
+    },
+    {
+      "task_id": "minimum-cost-to-make-arrays-identical",
+      "difficulty": "Medium",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import *\nclass Solution:\n    def minCost(self, arr: List[int], brr: List[int], k: int) -> int:\n        arr.sort()\n        brr.sort()\n        i, j = 0, len(brr) - 1\n        ans = 0\n        while i < len(arr):\n            if arr[i] != brr[j]:\n                diff = abs(arr[i] - brr[j])\n                if diff > k:\n                    return -1\n                ans += diff\n            else:\n                i += 1\n            j -= 1\n        return ans"
+    },
+    {
+      "task_id": "longest-special-path",
+      "difficulty": "Hard",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from collections import defaultdict, deque, Counter\nfrom typing import List\nclass Solution:\n    def longestSpecialPath(self, edges: List[List[int]], nums: List[int]) -> List[int]:\n        graph = defaultdict(list)\n        for u, v, _ in edges:\n            graph[u].append(v)\n            graph[v].append(u)\n\n        def dfs(node):\n            nonlocal max_path, min_nodes\n            if not graph[node]:\n                return 1, 1\n            children = []\n            for child in graph[node]:\n                if child != parent:\n                    child_path, child_min_nodes = dfs(child)\n                    children.append((child_path, child_min_nodes))\n            if len(children) == 1:\n                child_path, child_min_nodes = children[0]\n                if nums[node] == nums[child]:\n                    return max(max_path, child_path + 1), min(min_nodes, child_min_nodes)\n                else:\n                    return max(max_path, child_path + 2), min(min_nodes, child_min_nodes + 1)\n            elif len(children) == 2:\n                child_path1, child_min_nodes1 = sorted(children)[0]\n                child_path2, child_min_nodes2 = sorted(children)[1]\n                if nums[node] == nums[child1]:\n                    return max(max_path, child_path1 + 1), min(min_nodes, child_min_nodes1)\n                elif nums[node] == nums[child2]:\n                    return max(max_path, child_path2 + 1), min(min_nodes, child_min_nodes2)\n                else:\n                    return max(max_path, child_path1 + 2), min(min_nodes, child_min_nodes1 + 1)\n            else:\n                return max(max_path, 3), min(min_nodes, 2)\n\n        max_path, min_nodes = dfs(0)\n        return [max_path, min_nodes]"
+    },
+    {
+      "task_id": "manhattan-distances-of-all-arrangements-of-pieces",
+      "difficulty": "Hard",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from math import comb\n\nclass Solution:\n    def distanceSum(self, m: int, n: int, k: int) -> int:\n        MOD = 10**9 + 7\n        \n        # Calculate the number of ways to place k pieces in a grid of size m x n\n        total_ways = comb(m * n, k)\n        \n        # Calculate the sum of Manhattan distances for each possible arrangement\n        total_distance = 0\n        for i in range(1, k + 1):\n            total_distance += i * (m * n - i)\n        \n        # Sum up the distances for all possible arrangements\n        result = (total_distance * total_ways) % MOD\n        \n        return result"
+    },
+    {
+      "task_id": "sum-of-variable-length-subarrays",
+      "difficulty": "Easy",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\nclass Solution:\n    def subarraySum(self, nums: List[int]) -> int:\n        total_sum = 0\n        current_sum = 0\n        \n        for num in nums:\n            current_sum += num\n            if current_sum > 0:\n                total_sum += current_sum\n            else:\n                current_sum = 0\n                \n        return total_sum"
+    },
+    {
+      "task_id": "maximum-and-minimum-sums-of-at-most-size-k-subsequences",
+      "difficulty": "Medium",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import *\nfrom collections import *\n\nclass Solution:\n    def minMaxSums(self, nums: List[int], k: int) -> int:\n        nums.sort()\n        return (sum(nums[:k]) + sum(nums[-k:])) % (10**9 + 7)"
+    },
+    {
+      "task_id": "paint-house-iv",
+      "difficulty": "Medium",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\nclass Solution:\n    def minCost(self, n: int, cost: List[List[int]]) -> int:\n        dp = [[0, 0, 0] for _ in range(n)]\n        dp[0] = cost[0]\n        for i in range(1, n):\n            dp[i][0] = min(dp[i-1][1], dp[i-1][2]) + cost[i][0]\n            dp[i][1] = min(dp[i-1][0], dp[i-1][2]) + cost[i][1]\n            dp[i][2] = min(dp[i-1][0], dp[i-1][1]) + cost[i][2]\n        return min(dp[-1])"
+    },
+    {
+      "task_id": "minimum-unlocked-indices-to-sort-nums",
+      "difficulty": "Medium",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\nclass Solution:\n    def minUnlockedIndices(self, nums: List[int], locked: List[int]) -> int:\n        n = len(nums)\n        ans = 0\n        for i in range(n):\n            if locked[i]:\n                continue\n            j = i + 1\n            while j < n and nums[j] == nums[j - 1] + 1:\n                j += 1\n            if j == n:\n                return -1\n            ans += 1\n        return ans"
+    },
+    {
+      "task_id": "count-partitions-with-even-sum-difference",
+      "difficulty": "Easy",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\nclass Solution:\n    def countPartitions(self, nums: List[int]) -> int:\n        total_sum = sum(nums)\n        if total_sum % 2 != 0:\n            return 0\n        \n        prefix_sum = 0\n        odd_count = 0\n        even_count = 0\n        \n        for num in nums:\n            prefix_sum += num\n            if prefix_sum % 2 == 0:\n                even_count += 1\n            else:\n                odd_count += 1\n        \n        return even_count * odd_count"
+    },
+    {
+      "task_id": "count-mentions-per-user",
+      "difficulty": "Medium",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from collections import defaultdict, deque, Counter\nfrom typing import *\nimport collections\n\nclass Solution:\n    def countMentions(self, numberOfUsers: int, events: List[List[str]]) -> List[int]:\n        mentions = [0] * numberOfUsers\n        \n        # Dictionary to store the current state of users\n        user_state = collections.defaultdict(lambda: 'ONLINE')\n        \n        # Dictionary to keep track of the last seen timestamp for each user\n        last_seen = collections.defaultdict(int)\n        \n        for event_type, timestamp, mentions_str in events:\n            if event_type == 'MESSAGE':\n                # Update the state of users based on the mentions string\n                for user_id in mentions_str.split():\n                    if user_id == 'ALL':\n                        user_state[user_id] = 'ONLINE'\n                    elif user_id == 'HERE':\n                        user_state[user_id] = 'ONLINE'\n                    else:\n                        user_state[user_id] = 'OFFLINE'\n                \n                # Update the last seen timestamp for each user\n                last_seen[user_id] = timestamp\n                \n                # Increment the mentions for each user\n                for user_id in mentions_str.split():\n                    mentions[int(user_id)] += 1\n            elif event_type == 'OFFLINE':\n                # Update the state of the user\n                user_state[events[-1][2]] = 'OFFLINE'\n                \n                # Update the last seen timestamp for the user\n                last_seen[events[-1][2]] = timestamp\n        \n        return mentions"
+    },
+    {
+      "task_id": "maximum-frequency-after-subarray-operation",
+      "difficulty": "Medium",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\nfrom collections import Counter\n\nclass Solution:\n    def maxFrequency(self, nums: List[int], k: int) -> int:\n        count = Counter(nums)\n        left = right = 0\n        total = 0\n        \n        while right < len(nums):\n            total += nums[right]\n            \n            while total > k + nums[right]:\n                total -= nums[left]\n                left += 1\n            \n            count[nums[right]] += 1\n            right += 1\n        \n        return max(count.values())"
+    },
+    {
+      "task_id": "frequencies-of-shortest-supersequences",
+      "difficulty": "Hard",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import *\nfrom collections import *\n\nclass Solution:\n    def supersequences(self, words: List[str]) -> List[List[int]]:\n        n = len(words)\n        if n < 2:\n            return [[]]\n        \n        # Create a graph where nodes are characters and edges are transitions between characters\n        graph = defaultdict(list)\n        for i in range(n):\n            for j in range(i+1, n):\n                if self.isSuperSequence(words[i], words[j]):\n                    graph[words[i][0]].append(words[j][0])\n                    graph[words[j][0]].append(words[i][0])\n        \n        # Perform topological sorting to find the longest path\n        indegree = [0] * 26\n        for node in graph:\n            for neighbor in graph[node]:\n                indegree[ord(neighbor)-ord('a')] += 1\n        \n        queue = deque([node for node in graph if indegree[node-ord('a')] == 0])\n        result = []\n        while queue:\n            current_node = queue.popleft()\n            result.append(current_node)\n            for neighbor in graph[current_node]:\n                indegree[ord(neighbor)-ord('a')] -= 1\n                if indegree[ord(neighbor)-ord('a')] == 0:\n                    queue.append(neighbor)\n        \n        # Convert the result list into the required format\n        freqs = []\n        for word in words:\n            freq = [0] * 26\n            for char in word:\n                freq[ord(char)-ord('a')] += 1\n            freqs.append(freq)\n        \n        return freqs\n    \n    def isSuperSequence(self, s1: str, s2: str) -> bool:\n        i, j = 0, 0\n        while i < len(s1) and j < len(s2):\n            if s1[i] == s2[j]:\n                i += 1\n                j += 1\n            else:\n                i += 1\n        return j == len(s2)"
+    },
+    {
+      "task_id": "permutations-iii",
+      "difficulty": "Medium",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\nfrom itertools import permutations\n\nclass Solution:\n    def permute(self, n: int) -> List[List[int]]:\n        return [list(p) for p in permutations(range(1, n+1), n)]"
+    },
+    {
+      "task_id": "find-valid-pair-of-adjacent-digits-in-string",
+      "difficulty": "Easy",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "class Solution:\n    def findValidPair(self, s: str) -> str:\n        for i in range(len(s)-1):\n            if s[i] != s[i+1]:\n                count = int(s[i])\n                if s.count(str(count)) == count:\n                    return f\"{s[i]}{s[i+1]}\"\n        return \"\""
+    },
+    {
+      "task_id": "reschedule-meetings-for-maximum-free-time-i",
+      "difficulty": "Medium",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\n\nclass Solution:\n    def maxFreeTime(self, eventTime: int, k: int, startTime: List[int], endTime: List[int]) -> int:\n        # Sort the meetings based on their start times\n        meetings = sorted(zip(startTime, endTime))\n        \n        # Initialize variables to keep track of the current free time and the number of meetings scheduled\n        current_free_time = 0\n        meetings_scheduled = 0\n        \n        for start, end in meetings:\n            # If we have more than k meetings scheduled, move the earliest scheduled meeting's start time forward\n            if meetings_scheduled > k:\n                current_free_time += end - meetings[meetings_scheduled][0]\n                meetings_scheduled -= 1\n            \n            # Schedule the current meeting\n            meetings_scheduled += 1\n        \n        # Add the remaining free time after scheduling all meetings\n        return current_free_time + end - meetings[-1][0]"
+    },
+    {
+      "task_id": "reschedule-meetings-for-maximum-free-time-ii",
+      "difficulty": "Medium",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\nclass Solution:\n    def maxFreeTime(self, eventTime: int, startTime: List[int], endTime: List[int]) -> int:\n        # Sort the start and end times\n        sorted_start_times = sorted(startTime)\n        sorted_end_times = sorted(endTime)\n        \n        # Initialize variables to track the current free time and the maximum free time found\n        current_free_time = 0\n        max_free_time = 0\n        \n        # Iterate through the sorted start and end times\n        for i in range(len(sorted_start_times)):\n            # If there's a gap between the current end time and the next start time\n            if i < len(sorted_end_times) - 1 and sorted_end_times[i] < sorted_start_times[i + 1]:\n                # Calculate the free time available between the current end time and the next start time\n                free_time = sorted_start_times[i + 1] - sorted_end_times[i]\n                # Update the maximum free time if the calculated free time is greater\n                max_free_time = max(max_free_time, free_time)\n            # Update the current free time to the difference between the current end time and the next start time\n            current_free_time = sorted_end_times[i] - sorted_start_times[i]\n        \n        # Return the maximum free time found\n        return max_free_time"
+    },
+    {
+      "task_id": "minimum-cost-good-caption",
+      "difficulty": "Hard",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "class Solution:\n    def minCostGoodCaption(self, caption: str) -> str:\n        if len(caption) < 3:\n            return \"\"\n\n        prev_char = None\n        result = []\n        for char in caption:\n            if prev_char is None or prev_char == char:\n                result.append(char)\n            else:\n                result.append(chr(ord(prev_char) + 1))\n            prev_char = char\n\n        return ''.join(result)"
+    },
+    {
+      "task_id": "maximum-difference-between-even-and-odd-frequency-i",
+      "difficulty": "Easy",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from collections import Counter\n\nclass Solution:\n    def maxDifference(self, s: str) -> int:\n        char_count = Counter(s)\n        odd_freq_chars = [char for char, freq in char_count.items() if freq % 2 != 0]\n        even_freq_chars = [char for char, freq in char_count.items() if freq % 2 == 0]\n\n        if not odd_freq_chars or not even_freq_chars:\n            return 0\n        \n        max_diff = float('-inf')\n        for odd_char in odd_freq_chars:\n            for even_char in even_freq_chars:\n                max_diff = max(max_diff, abs(char_count[odd_char] - char_count[even_char]))\n        \n        return max_diff"
+    },
+    {
+      "task_id": "maximum-manhattan-distance-after-k-changes",
+      "difficulty": "Medium",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from collections import Counter\nclass Solution:\n    def maxDistance(self, s: str, k: int) -> int:\n        count = Counter(s)\n        if k >= len(count):\n            return len(s)\n        max_count = max(count.values())\n        return len(s) - max_count + min(k, max_count)"
+    },
+    {
+      "task_id": "minimum-increments-for-target-multiples-in-an-array",
+      "difficulty": "Hard",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\nclass Solution:\n    def minimumIncrements(self, nums: List[int], target: List[int]) -> int:\n        return sum(max(0, t - n) for t, n in zip(target, sorted(nums)))"
+    },
+    {
+      "task_id": "maximum-difference-between-even-and-odd-frequency-ii",
+      "difficulty": "Hard",
+      "compiles": false,
+      "passed": false,
+      "generated_code": "from collections import Counter\n\nclass Solution:\n    def maxDifference(self, s: str, k: int) -> int:\n        n = len(s)\n        if n < k:\n            return -1\n        \n        char_count = Counter(s[:k])\n        min_freq = min(char_count.values())\n        max_diff = max_freq\n        \n        for i in range(k, n):\n            char_count[s[i]] += 1\n            char_count[s[i-k]] -= 1\n            \n            if char_count[s[i-k]] == 0:\n                del char_count[s[i-k]]\n            \n            min_freq = min(min_freq, min(char_count.values()))\n            max_diff = max(max_diff, char_count[s[i]].-min_freq)\n        \n        return max_diff"
+    },
+    {
+      "task_id": "sort-matrix-by-diagonals",
+      "difficulty": "Medium",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\nfrom heapq import heappush, heappop\n\nclass Solution:\n    def sortMatrix(self, grid: List[List[int]]) -> List[List[int]]:\n        rows, cols = len(grid), len(grid[0])\n        heap = []\n        \n        # Push elements from the first row into the heap\n        for j in range(cols):\n            heappush(heap, (grid[0][j], 0, j))\n        \n        # Process each row starting from the second row\n        for i in range(1, rows):\n            while heap and heap[0][0] < grid[i][0]:\n                _, r, c = heappop(heap)\n                heappush(heap, (grid[i][c], i, c))\n            \n            heappush(heap, (grid[i][0], i, 0))\n        \n        # Place elements back into the original grid\n        for i in range(rows):\n            for j in range(cols):\n                grid[i][j] = heappop(heap)[0]\n        \n        return grid"
+    },
+    {
+      "task_id": "assign-elements-to-groups-with-constraints",
+      "difficulty": "Medium",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\nclass Solution:\n    def assignElements(self, groups: List[int], elements: List[int]) -> List[int]:\n        assigned = [-1] * len(groups)\n        for i in range(len(elements)):\n            for j in range(len(groups)):\n                if groups[j] % elements[i] == 0:\n                    assigned[j] = i\n                    break\n        return assigned"
+    },
+    {
+      "task_id": "count-substrings-divisible-by-last-digit",
+      "difficulty": "Hard",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "class Solution:\n    def countSubstrings(self, s: str) -> int:\n        mod = 10**9 + 7\n        dp = [0] * len(s)\n        for i in range(len(s)):\n            if s[i] != '0':\n                dp[i] = 1\n                for j in range(i):\n                    if s[j] != '0' and int(s[j:i+1]) % int(s[i]) == 0:\n                        dp[i] += dp[j]\n                        dp[i] %= mod\n        return sum(dp)"
+    },
+    {
+      "task_id": "maximize-the-minimum-game-score",
+      "difficulty": "Hard",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\nclass Solution:\n    def maxScore(self, points: List[int], m: int) -> int:\n        left, right = 0, sum(points)\n        while left < right:\n            mid = (left + right) // 2\n            if self.canReachMid(points, m, mid):\n                left = mid + 1\n            else:\n                right = mid\n        return left - 1\n\n    def canReachMid(self, points, m, mid):\n        total_points = 0\n        for point in points:\n            if point > mid:\n                total_points += point - mid\n                m -= 1\n        return m >= 0 and total_points <= m"
+    },
+    {
+      "task_id": "maximum-students-on-a-single-bench",
+      "difficulty": "Easy",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\nfrom collections import defaultdict\n\nclass Solution:\n    def maxStudentsOnBench(self, students: List[List[int]]) -> int:\n        count = defaultdict(int)\n        for student in students:\n            count[student[1]] += 1\n        \n        return max(count.values(), default=0)"
+    },
+    {
+      "task_id": "sum-of-good-numbers",
+      "difficulty": "Easy",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\nclass Solution:\n    def sumOfGoodNumbers(self, nums: List[int], k: int) -> int:\n        n = len(nums)\n        res = 0\n        \n        for i in range(n):\n            left = max(0, i - k)\n            right = min(n - 1, i + k)\n            \n            if left == 0:\n                res += sum(nums[left:right+1])\n            elif right == n - 1:\n                res += sum(nums[left:right+1])\n            else:\n                res += sum(nums[left:right+1]) - sum(nums[left-1:i]) - sum(nums[i+1:right+1])\n                \n        return res"
+    },
+    {
+      "task_id": "separate-squares-i",
+      "difficulty": "Medium",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import *\nimport bisect\n\nclass Solution:\n    def separateSquares(self, squares: List[List[int]]) -> float:\n        points = []\n        for x, y, l in squares:\n            points.append((x - l / 2, y))\n            points.append((x + l / 2, y))\n        points.sort()\n        left = 0\n        right = len(points)\n        while left < right:\n            mid = (left + right) // 2\n            if self.is_valid(mid, points):\n                right = mid\n            else:\n                left = mid + 1\n        return (points[left][1] + points[right][1]) / 2\n        \n    def is_valid(self, mid, points):\n        count = 0\n        for i in range(len(points)):\n            if points[i][0] > mid:\n                break\n            j = bisect.bisect_right(points, (mid + points[i][0], points[i][1]))\n            count += j - i\n        return count == len(squares)"
+    },
+    {
+      "task_id": "separate-squares-ii",
+      "difficulty": "Hard",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import *\nimport bisect\n\nclass Solution:\n    def separateSquares(self, squares: List[List[int]]) -> float:\n        # Sort squares by their bottom-left y-coordinates\n        squares.sort(key=lambda x: x[1])\n        \n        # Initialize variables\n        total_area_above = 0\n        total_area_below = 0\n        min_y = float('inf')\n        \n        # Iterate through each square\n        for x1, y1, l in squares:\n            # Calculate the area of the square\n            area = l ** 2\n            \n            # Update the total area above and below the line\n            total_area_above += area\n            total_area_below -= area\n            \n            # Find the number of squares above and below the current line\n            num_above = bisect.bisect_right(squares, [x1 + l, y1])\n            num_below = len(squares) - num_above\n            \n            # Check if the total area covered by squares above and below the line equals the total area covered by squares below the line\n            if total_area_above == total_area_below:\n                min_y = min(min_y, y1)\n        \n        return min_y"
+    },
+    {
+      "task_id": "shortest-matching-substring",
+      "difficulty": "Hard",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "class Solution:\n    def shortestMatchingSubstring(self, s: str, p: str) -> int:\n        if len(p) == 2:\n            i, j = 0, 0\n            while i < len(s):\n                if s[i] == p[0]:\n                    i += 1\n                elif s[i] == p[1]:\n                    i += 2\n                else:\n                    break\n            return len(s) - i if i == len(s) else -1\n        else:\n            return -1"
+    },
+    {
+      "task_id": "find-special-substring-of-length-k",
+      "difficulty": "Easy",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "class Solution:\n    def hasSpecialSubstring(self, s: str, k: int) -> bool:\n        n = len(s)\n        for i in range(n - k + 1):\n            if len(set(s[i:i+k])) == 1 and s[i] != s[i+1] and s[i+1] != s[i+k-1]:\n                return True\n        return False"
+    },
+    {
+      "task_id": "eat-pizzas",
+      "difficulty": "Medium",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\nfrom heapq import heappush, heappop\n\nclass Solution:\n    def maxWeight(self, pizzas: List[int]) -> int:\n        heap = []\n        for p in pizzas[::-1]:\n            heappush(heap, -p)\n        ans = 0\n        while len(heap) >= 4:\n            w1, w2, w3, w4 = heappop(heap), heappop(heap), heappop(heap), heappop(heap)\n            ans += w1 + w2 + w3 + w4\n            heappush(heap, -w1 - w2 - w3 - w4)\n        return ans"
+    },
+    {
+      "task_id": "select-k-disjoint-special-substrings",
+      "difficulty": "Medium",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "class Solution:\n    def maxSubstringLength(self, s: str, k: int) -> bool:\n        count = [0] * 26\n        left = right = 0\n        while right < len(s):\n            count[ord(s[right]) - ord('a')] += 1\n            while any(count[i] > k for i in range(26)):\n                count[ord(s[left]) - ord('a')] -= 1\n                left += 1\n            if right - left + 1 == k:\n                return True\n            right += 1\n        return False"
+    },
+    {
+      "task_id": "length-of-longest-v-shaped-diagonal-segment",
+      "difficulty": "Hard",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\nclass Solution:\n    def lenOfVDiagonal(self, grid: List[List[int]]) -> int:\n        max_length = 0\n        \n        for i in range(len(grid)):\n            for j in range(len(grid[0])):\n                if grid[i][j] == 1:\n                    current_length = self.find_v_diagonal_length(grid, i, j)\n                    max_length = max(max_length, current_length)\n        \n        return max_length\n    \n    def find_v_diagonal_length(self, grid, row, col):\n        length = 1\n        directions = [(0, 1), (1, 0), (0, -1), (-1, 0)]\n        \n        for _ in range(3):\n            new_row = row + directions[_][0]\n            new_col = col + directions[_][1]\n            \n            if 0 <= new_row < len(grid) and 0 <= new_col < len(grid[0]) and grid[new_row][new_col] == 2:\n                length += 1\n            else:\n                break\n        \n        return length"
+    },
+    {
+      "task_id": "longest-common-prefix-after-at-most-one-removal",
+      "difficulty": "Medium",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "class Solution:\n    def longestCommonPrefix(self, s: str, t: str) -> int:\n        i = 0\n        while i < min(len(s), len(t)):\n            if s[i] != t[i]:\n                break\n            i += 1\n        return i"
+    },
+    {
+      "task_id": "check-if-digits-are-equal-in-string-after-operations-i",
+      "difficulty": "Easy",
+      "compiles": true,
+      "passed": true,
+      "generated_code": "class Solution:\n    def hasSameDigits(self, s: str) -> bool:\n        while len(s) > 2:\n            s = ''.join(str((int(s[i]) + int(s[i+1])) % 10) for i in range(len(s)-1))\n        return s[0] == s[1]"
+    },
+    {
+      "task_id": "maximum-sum-with-at-most-k-elements",
+      "difficulty": "Medium",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import *\nfrom collections import *\n\nclass Solution:\n    def maxSum(self, grid: List[List[int]], limits: List[int], k: int) -> int:\n        rows, cols = len(grid), len(grid[0])\n        prefix_sum = [[0] * (cols + 1) for _ in range(rows + 1)]\n        for i in range(1, rows + 1):\n            for j in range(1, cols + 1):\n                prefix_sum[i][j] = prefix_sum[i - 1][j] + prefix_sum[i][j - 1] - prefix_sum[i - 1][j - 1] + grid[i - 1][j - 1]\n        \n        dp = [[0] * (k + 1) for _ in range(rows + 1)]\n        for i in range(1, rows + 1):\n            for j in range(1, cols + 1):\n                for l in range(k + 1):\n                    if l < limits[i - 1]:\n                        dp[i][l] = max(dp[i][l], dp[i - 1][l] + prefix_sum[i][j])\n                    else:\n                        dp[i][l] = max(dp[i][l], dp[i - 1][l - limits[i - 1]] + prefix_sum[i][j] - prefix_sum[i - 1][j - limits[i - 1]])\n        \n        return dp[-1][-1]"
+    },
+    {
+      "task_id": "check-if-digits-are-equal-in-string-after-operations-ii",
+      "difficulty": "Hard",
+      "compiles": true,
+      "passed": true,
+      "generated_code": "class Solution:\n    def hasSameDigits(self, s: str) -> bool:\n        while len(s) > 2:\n            s = ''.join(str((int(s[i]) + int(s[i+1])) % 10) for i in range(len(s)-1))\n        return s[0] == s[1]"
+    },
+    {
+      "task_id": "maximize-the-distance-between-points-on-a-square",
+      "difficulty": "Hard",
+      "compiles": false,
+      "passed": false,
+      "generated_code": "from typing import List\nclass Solution:\n    def maxDistance(self, side: int, points: List[List[int]], k: int) -> int:\n        points.sort(key=lambda p: abs(p[0]) + abs(p[1]))\n        return max(abs(points[i][0] - points[j][0]) + abs(points[i][1] - points[j][1])"
+    },
+    {
+      "task_id": "maximum-coin-collection",
+      "difficulty": "Medium",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\nclass Solution:\n    def maxCoins(self, lane1: List[int], lane2: List[int]) -> int:\n        n = len(lane1)\n        dp = [[0]*2 for _ in range(n+1)]\n        dp[0][0] = 0\n        dp[0][1] = 0\n        \n        for i in range(1, n+1):\n            dp[i][0] = max(dp[i-1][0]+lane1[i-1], dp[i-1][1]-abs(lane1[i-1]))\n            dp[i][1] = max(dp[i-1][1]+lane2[i-1], dp[i-1][0]-abs(lane2[i-1]))\n            \n        return max(dp[n][0], dp[n][1])"
+    },
+    {
+      "task_id": "transform-array-by-parity",
+      "difficulty": "Easy",
+      "compiles": true,
+      "passed": true,
+      "generated_code": "from typing import List\nclass Solution:\n    def transformArray(self, nums: List[int]) -> List[int]:\n        for i in range(len(nums)):\n            if nums[i] % 2 == 0:\n                nums[i] = 0\n            else:\n                nums[i] = 1\n        return sorted(nums)"
+    },
+    {
+      "task_id": "find-the-number-of-copy-arrays",
+      "difficulty": "Medium",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import *\nfrom collections import *\n\nclass Solution:\n    def countArrays(self, original: List[int], bounds: List[List[int]]) -> int:\n        dp = [0] * len(original)\n        dp[0] = 1\n        \n        for i in range(1, len(original)):\n            left_bound, right_bound = bounds[i-1]\n            if left_bound > original[i]:\n                continue\n            if right_bound < original[i]:\n                continue\n            \n            for j in range(i):\n                if original[j] + 1 == original[i]:\n                    dp[i] += dp[j]\n                    \n        return dp[-1]"
+    },
+    {
+      "task_id": "find-minimum-cost-to-remove-array-elements",
+      "difficulty": "Medium",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\nclass Solution:\n    def minCost(self, nums: List[int]) -> int:\n        if len(nums) == 0:\n            return 0\n        \n        nums.sort()\n        n = len(nums)\n        if n < 3:\n            return nums[-1]\n        \n        return max(nums[0], nums[1], nums[2]) + self.minCost(nums[3:])"
+    },
+    {
+      "task_id": "permutations-iv",
+      "difficulty": "Hard",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\nfrom itertools import permutations\n\nclass Solution:\n    def permute(self, n: int, k: int) -> List[int]:\n        nums = list(range(1, n + 1))\n        for perm in permutations(nums):\n            if self.is_alternating(perm):\n                index = self.find_index(perm, k)\n                return perm[:index] + perm[index+1:]\n        return []\n\n    def is_alternating(self, perm):\n        return all(perm[i] % 2 != perm[i+1] % 2 for i in range(len(perm)-1))\n\n    def find_index(self, perm, k):\n        count = 0\n        for i in range(len(perm)):\n            if perm[i] % 2 == 0:\n                count += 1\n            if count >= k:\n                return i\n        return len(perm)"
+    },
+    {
+      "task_id": "find-the-largest-almost-missing-integer",
+      "difficulty": "Easy",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from collections import Counter\nfrom typing import List\nclass Solution:\n    def largestInteger(self, nums: List[int], k: int) -> int:\n        count = Counter(nums)\n        res = []\n        for num in sorted(count.keys(), reverse=True):\n            while count[num] > 0 and k > 0:\n                res.append(num)\n                count[num] -= 1\n                k -= 1\n        return max(res) if res else -1"
+    },
+    {
+      "task_id": "longest-palindromic-subsequence-after-at-most-k-operations",
+      "difficulty": "Medium",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "class Solution:\n    def longestPalindromicSubsequence(self, s: str, k: int) -> int:\n        n = len(s)\n        dp = [[0] * (k + 1) for _ in range(n)]\n        \n        for i in range(1, n + 1):\n            for j in range(1, k + 1):\n                if s[i - 1] == s[n - i]:\n                    dp[i][j] = dp[i - 1][j - 1] + 2\n                else:\n                    dp[i][j] = max(dp[i - 1][j], dp[i][j - 1])\n        \n        return dp[n][k]"
+    },
+    {
+      "task_id": "sum-of-k-subarrays-with-length-at-least-m",
+      "difficulty": "Medium",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\nclass Solution:\n    def maxSum(self, nums: List[int], k: int, m: int) -> int:\n        n = len(nums)\n        if n < k * m:\n            return -1\n        \n        dp = [[0] * (m + 1) for _ in range(k + 1)]\n        prefix_sum = [0]\n        for num in nums:\n            prefix_sum.append(prefix_sum[-1] + num)\n        \n        for i in range(1, k + 1):\n            for j in range(m, 0, -1):\n                dp[i][j] = max(dp[i][j], dp[i - 1][j])\n                if i >= m:\n                    dp[i][j] = max(dp[i][j], prefix_sum[i] - prefix_sum[i - m])\n        \n        return dp[k][m]"
+    },
+    {
+      "task_id": "lexicographically-smallest-generated-string",
+      "difficulty": "Hard",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "class Solution:\n    def generateString(self, str1: str, str2: str) -> str:\n        result = []\n        for i in range(len(str1)):\n            if str1[i] == 'T':\n                result.append(str2)\n            else:\n                result.append('b')\n        result.append(str2)\n        return ''.join(result)"
+    },
+    {
+      "task_id": "maximize-profit-from-task-assignment",
+      "difficulty": "Medium",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\n\nclass Solution:\n    def maxProfit(self, workers: List[int], tasks: List[List[int]]) -> int:\n        workers.sort()\n        tasks.sort(key=lambda x: x[0])\n        dp = [0] * (max(workers) + 1)\n        for skill, profit in tasks:\n            for i in range(skill, len(dp)):\n                dp[i] = max(dp[i], dp[i - skill] + profit)\n        return dp[-1]"
+    },
+    {
+      "task_id": "fruits-into-baskets-ii",
+      "difficulty": "Easy",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\nfrom collections import Counter\n\nclass Solution:\n    def numOfUnplacedFruits(self, fruits: List[int], baskets: List[int]) -> int:\n        count = Counter(fruits)\n        max_capacity = sum(baskets)\n        current_capacity = 0\n        result = len(count)\n\n        for fruit, freq in count.items():\n            if current_capacity + freq > max_capacity:\n                result -= 1\n                current_capacity = max(0, current_capacity - count[max(fruit, 1)])\n            current_capacity += freq\n\n        return result"
+    },
+    {
+      "task_id": "choose-k-elements-with-maximum-sum",
+      "difficulty": "Medium",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\nfrom heapq import nlargest\n\nclass Solution:\n    def findMaxSum(self, nums1: List[int], nums2: List[int], k: int) -> List[int]:\n        ans = []\n        heap = []\n        for i in range(len(nums1)):\n            if len(heap) < k:\n                heappush(heap, (-nums2[i], i))\n            elif nums2[i] > -heap[0][0]:\n                heappop(heap)\n                heappush(heap, (-nums2[i], i))\n        while heap:\n            _, idx = heappop(heap)\n            ans.append(-nums2[idx])\n        return ans[::-1]"
+    },
+    {
+      "task_id": "fruits-into-baskets-iii",
+      "difficulty": "Medium",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\nfrom collections import Counter\n\nclass Solution:\n    def numOfUnplacedFruits(self, fruits: List[int], baskets: List[int]) -> int:\n        count = Counter(fruits)\n        max_capacity = sum(baskets)\n        current_capacity = 0\n        result = len(count)\n\n        for fruit, freq in count.items():\n            if current_capacity + freq > max_capacity:\n                result -= 1\n                current_capacity = max(0, current_capacity - count[max(fruit, 1)])\n            current_capacity += freq\n\n        return result"
+    },
+    {
+      "task_id": "maximize-subarrays-after-removing-one-conflicting-pair",
+      "difficulty": "Hard",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\n\nclass Solution:\n    def maxSubarrays(self, n: int, conflictingPairs: List[List[int]]) -> int:\n        # Sort the pairs by their first element\n        conflictingPairs.sort()\n        \n        # Create a set to store unique pairs\n        unique_pairs = set(conflictingPairs)\n        \n        # Initialize variables\n        max_subarrays = 0\n        current_subarray_length = 0\n        \n        # Iterate through the sorted pairs\n        for i in range(len(conflictingPairs)):\n            # Check if the current pair forms a conflict with the previous pair\n            if i > 0 and conflictingPairs[i][0] == conflictingPairs[i-1][1]:\n                # If it does, update the current subarray length\n                current_subarray_length += 1\n            else:\n                # If it doesn't, calculate the number of subarrays formed by this pair\n                max_subarrays += (current_subarray_length + 1) // 2\n                # Reset the current subarray length\n                current_subarray_length = 1\n        \n        # Add the last subarray length\n        max_subarrays += (current_subarray_length + 1) // 2\n        \n        return max_subarrays"
+    },
+    {
+      "task_id": "apply-substitutions",
+      "difficulty": "Medium",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\nclass Solution:\n    def applySubstitutions(self, replacements: List[List[str]], text: str) -> str:\n        for r in replacements:\n            text = text.replace(r[0], r[1])\n        return text"
+    },
+    {
+      "task_id": "unique-3-digit-even-numbers",
+      "difficulty": "Easy",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\n\nclass Solution:\n    def totalNumbers(self, digits: List[int]) -> int:\n        if len(digits) < 3:\n            return 0\n        \n        # Filter out odd digits\n        even_digits = [d for d in digits if d % 2 == 0]\n        \n        if len(even_digits) < 3:\n            return 0\n        \n        # Calculate the number of ways to choose 3 digits from the remaining even digits\n        count = 0\n        for i in range(len(even_digits)):\n            for j in range(i + 1, len(even_digits)):\n                for k in range(j + 1, len(even_digits)):\n                    count += 1\n        \n        return count"
+    },
+    {
+      "task_id": "longest-common-prefix-of-k-strings-after-removal",
+      "difficulty": "Hard",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\nclass Solution:\n    def longestCommonPrefix(self, words: List[str], k: int) -> List[int]:\n        if len(words) < k:\n            return [0] * len(words)\n        \n        prefix = min(words, key=len)\n        result = []\n        \n        for word in words:\n            while word.startswith(prefix):\n                prefix = prefix[:-1]\n                if len(prefix) == 0:\n                    break\n        \n            result.append(len(prefix))\n        \n        return result"
+    },
+    {
+      "task_id": "longest-special-path-ii",
+      "difficulty": "Hard",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from collections import defaultdict, deque, Counter\nfrom typing import List\nclass Solution:\n    def longestSpecialPath(self, edges: List[List[int]], nums: List[int]) -> List[int]:\n        graph = defaultdict(list)\n        for u, v, _ in edges:\n            graph[u].append(v)\n            graph[v].append(u)\n\n        def dfs(node):\n            nonlocal max_path, min_path\n            if len(graph[node]) == 1:\n                return 1, 1\n\n            left_max, left_min = 0, 1\n            right_max, right_min = 0, 1\n\n            for neighbor in graph[node]:\n                if neighbor != parent:\n                    lmax, lmin = dfs(neighbor)\n                    if nums[node] == nums[neighbor]:\n                        right_max = max(right_max, lmin + 1)\n                    else:\n                        left_max = max(left_max, lmax + 1)\n\n            max_path = max(max_path, left_max + right_max)\n            min_path = min(min_path, left_max, right_max)\n\n            return max(left_max, right_max), 1 + min(left_max, right_max)\n\n        parent = None\n        max_path, min_path = dfs(0)\n        return [max_path, min_path]"
+    },
+    {
+      "task_id": "maximum-unique-subarray-sum-after-deletion",
+      "difficulty": "Easy",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\nclass Solution:\n    def maxSum(self, nums: List[int]) -> int:\n        current_sum = 0\n        max_sum = 0\n        seen = set()\n        \n        for num in nums:\n            if num not in seen:\n                current_sum += num\n                seen.add(num)\n                max_sum = max(max_sum, current_sum)\n            else:\n                current_sum = 0\n                seen.clear()\n                seen.add(num)\n        \n        return max_sum"
+    },
+    {
+      "task_id": "closest-equal-element-queries",
+      "difficulty": "Medium",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\nclass Solution:\n    def solveQueries(self, nums: List[int], queries: List[int]) -> List[int]:\n        n = len(nums)\n        ans = []\n        for q in queries:\n            idx = nums.index(q)\n            if idx == q:\n                ans.append(-1)\n            else:\n                left = idx\n                right = idx\n                while left >= 0 and nums[left] != q:\n                    left -= 1\n                while right < n and nums[right] != q:\n                    right += 1\n                ans.append(min(right - idx, idx - left))\n        return ans"
+    },
+    {
+      "task_id": "zero-array-transformation-iv",
+      "difficulty": "Medium",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\nclass Solution:\n    def minZeroArray(self, nums: List[int], queries: List[List[int]]) -> int:\n        for l, r, val in queries:\n            nums[l:r+1] = [num - val if num >= val else 0 for num in nums[l:r+1]]\n        return sum(num == 0 for num in nums)"
+    },
+    {
+      "task_id": "count-beautiful-numbers",
+      "difficulty": "Hard",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "class Solution:\n    def beautifulNumbers(self, l: int, r: int) -> int:\n        def is_beautiful(n):\n            digits = [int(digit) for digit in str(n)]\n            product_of_digits = 1\n            sum_of_digits = 0\n            for digit in digits:\n                product_of_digits *= digit\n                sum_of_digits += digit\n            return product_of_digits % sum_of_digits == 0\n\n        count = 0\n        for num in range(l, r + 1):\n            if is_beautiful(num):\n                count += 1\n        return count"
+    },
+    {
+      "task_id": "phone-number-prefix",
+      "difficulty": "Easy",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\nclass Solution:\n    def phonePrefix(self, numbers: List[str]) -> bool:\n        for i in range(len(numbers)):\n            for j in range(i+1, len(numbers)):\n                if numbers[j].startswith(numbers[i]):\n                    return False\n        return True"
+    },
+    {
+      "task_id": "maximum-containers-on-a-ship",
+      "difficulty": "Easy",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "class Solution:\n    def maxContainers(self, n: int, w: int, maxWeight: int) -> int:\n        dp = [[0] * (w + 1) for _ in range(n + 1)]\n        for i in range(1, n + 1):\n            for j in range(1, w + 1):\n                if i == 1:\n                    dp[i][j] = j // w\n                else:\n                    dp[i][j] = max(dp[i - 1][j], dp[i][j - w * i // i])\n        return dp[n][w]"
+    },
+    {
+      "task_id": "properties-graph",
+      "difficulty": "Medium",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\nfrom collections import defaultdict\n\nclass Solution:\n    def numberOfComponents(self, properties: List[List[int]], k: int) -> int:\n        graph = defaultdict(set)\n        for p in properties:\n            for q in properties:\n                if p != q and len(set(p).intersection(q)) >= k:\n                    graph[p[0]].add(q[0])\n                    graph[q[0]].add(p[0])\n        \n        visited = set()\n        count = 0\n        for node in graph:\n            if node not in visited:\n                dfs(node, graph, visited)\n                count += 1\n        \n        return count\n    \ndef dfs(node, graph, visited):\n    visited.add(node)\n    for neighbor in graph[node]:\n        if neighbor not in visited:\n            dfs(neighbor, graph, visited)"
+    },
+    {
+      "task_id": "find-the-minimum-amount-of-time-to-brew-potions",
+      "difficulty": "Medium",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import *\nclass Solution:\n    def minTime(self, skill: List[int], mana: List[int]) -> int:\n        return sum(sorted(skill) + sorted(mana))"
+    },
+    {
+      "task_id": "minimum-operations-to-make-array-elements-zero",
+      "difficulty": "Hard",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import *\nimport collections\n\nclass Solution:\n    def minOperations(self, queries: List[List[int]]) -> int:\n        res = 0\n        for l, r in queries:\n            res += self.minOpsHelper(l, r)\n        return res\n    \n    def minOpsHelper(self, l, r):\n        if l == r:\n            return 0\n        mid = (l + r) // 2\n        left = self.minOpsHelper(l, mid)\n        right = self.minOpsHelper(mid + 1, r)\n        return left + right + self.countOps(l, mid) + self.countOps(mid + 1, r)\n    \n    def countOps(self, l, r):\n        count = 0\n        while l <= r:\n            count += l % 4\n            l //= 4\n        return count"
+    },
+    {
+      "task_id": "maximize-score-after-pair-deletions",
+      "difficulty": "Medium",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\nclass Solution:\n    def maxScore(self, nums: List[int]) -> int:\n        if len(nums) < 3:\n            return 0\n        \n        dp = [nums[0], nums[0] + nums[1]]\n        for i in range(2, len(nums)):\n            dp.append(max(dp[-1], dp[-2] + nums[i]))\n        \n        return dp[-1]"
+    },
+    {
+      "task_id": "reverse-degree-of-a-string",
+      "difficulty": "Easy",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "class Solution:\n    def reverseDegree(self, s: str) -> int:\n        return sum((ord(c) - ord('a') + 1) * (i + 1) for i, c in enumerate(s[::-1]))"
+    },
+    {
+      "task_id": "maximize-active-section-with-trade-i",
+      "difficulty": "Medium",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "class Solution:\n    def maxActiveSectionsAfterTrade(self, s: str) -> int:\n        ans = 0\n        cnt = 0\n        for c in s:\n            if c == '1':\n                cnt += 1\n            else:\n                ans = max(ans, cnt)\n                cnt = 0\n        return ans + 1"
+    },
+    {
+      "task_id": "minimum-cost-to-divide-array-into-subarrays",
+      "difficulty": "Hard",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\nclass Solution:\n    def minimumCost(self, nums: List[int], cost: List[int], k: int) -> int:\n        n = len(nums)\n        dp = [[float('inf')] * (n + 1) for _ in range(n + 1)]\n        dp[0][0] = 0\n        \n        for i in range(1, n + 1):\n            for j in range(i + 1):\n                if j > 0:\n                    dp[i][j] = min(dp[i][j], dp[i - 1][j - 1] + (nums[j - 1] + k * (i - j)) * cost[j - 1])\n                dp[i][j] = min(dp[i][j], dp[i - 1][j] + (nums[i - 1] + k * (i - j)) * cost[i - 1])\n        \n        return dp[n][n]"
+    },
+    {
+      "task_id": "maximize-active-section-with-trade-ii",
+      "difficulty": "Hard",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\nclass Solution:\n    def maxActiveSectionsAfterTrade(self, s: str, queries: List[List[int]]) -> List[int]:\n        n = len(s)\n        dp = [0] * (n + 1)\n        for i in range(1, n + 1):\n            if s[i - 1] == '1':\n                dp[i] = dp[i - 1] + 1\n        \n        ans = []\n        for l, r in queries:\n            left = l\n            right = r\n            while left > 0 and s[left - 1] == '0':\n                left -= 1\n            while right < n and s[right] == '1':\n                right += 1\n            \n            if left >= right:\n                ans.append(dp[n])\n                continue\n            \n            # Find the longest subarray of '1's between left and right\n            max_length = 0\n            current_length = 0\n            for i in range(left, right + 1):\n                if s[i] == '1':\n                    current_length += 1\n                    max_length = max(max_length, current_length)\n                else:\n                    current_length = 0\n            \n            # Calculate the new maximum number of active sections\n            new_max = dp[left] + dp[right + 1] - max_length + 1\n            ans.append(new_max)\n        \n        return ans"
+    },
+    {
+      "task_id": "minimum-cost-to-reach-every-position",
+      "difficulty": "Easy",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\nclass Solution:\n    def minCosts(self, cost: List[int]) -> List[int]:\n        if len(cost) < 2:\n            return cost\n        \n        # Initialize the first two elements\n        dp = [cost[0], min(cost[0], cost[1])]\n        \n        # Fill the DP array\n        for i in range(2, len(cost)):\n            dp.append(min(dp[i-1] + cost[i], dp[i-2] + cost[i]))\n        \n        return dp[-1]"
+    },
+    {
+      "task_id": "longest-palindrome-after-substring-concatenation-i",
+      "difficulty": "Medium",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "class Solution:\n    def longestPalindrome(self, s: str, t: str) -> int:\n        return max(len(s), len(t))"
+    },
+    {
+      "task_id": "longest-palindrome-after-substring-concatenation-ii",
+      "difficulty": "Hard",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "class Solution:\n    def longestPalindrome(self, s: str, t: str) -> int:\n        return max(len(s), len(t))"
+    },
+    {
+      "task_id": "minimum-operations-to-make-elements-within-k-subarrays-equal",
+      "difficulty": "Hard",
+      "compiles": true,
+      "passed": false,
+      "generated_code": "from typing import List\nclass Solution:\n    def minOperations(self, nums: List[int], x: int, k: int) -> int:\n        n = len(nums)\n        prefix_sum = [0]\n        for num in nums:\n            prefix_sum.append(prefix_sum[-1] + num)\n\n        target_sum = k * x\n        left, right = 0, 0\n        current_sum = 0\n        min_operations = float('inf')\n\n        while right < n:\n            current_sum += prefix_sum[right]\n            while current_sum > target_sum:\n                current_sum -= prefix_sum[left]\n                left += 1\n            if current_sum == target_sum:\n                min_operations = min(min_operations, right - left + 1)\n            right += 1\n\n        return min_operations if min_operations != float('inf') else -1"
+    }
+  ]
+}

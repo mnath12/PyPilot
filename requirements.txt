@@ -6,4 +6,6 @@ peft
 accelerate
 bitsandbytes
 trl
+# Used by some LeetCode problems in the dataset (e.g. maximum-value-sum-by-placing-three-rooks)
+sortedcontainers
 

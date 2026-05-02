@@ -26,23 +26,31 @@ from transformers import (
 from trl import SFTConfig, SFTTrainer
 
 
-MODEL_ID = "Qwen/Qwen2.5-Coder-7B"
+# Default base model (use --model_id to override, e.g. Qwen/Qwen2.5-Coder-7B-Instruct)
+DEFAULT_MODEL_ID = "Qwen/Qwen2.5-Coder-0.5B-Instruct"
+
+# Qwen chat tokens (match training/inference format)
+CHAT_USER = "<|im_start|>user\n"
+CHAT_ASSISTANT = "<|im_start|>assistant\n"
+CHAT_END = "<|im_end|>"
 
 
 def format_example(example: dict) -> dict:
     """
     Format a single example into instruction-following format.
 
-    The LeetCode dataset has:
-      - prompt: problem description + starter code
-      - completion: the solution code
+    Uses query-only (no prompt/prelude) and instructs the model to respond
+    with only Python code, matching the notebook training setup.
     """
-    instruction = example["prompt"]
+    instruction = (example.get("query") or "").strip()
+    instruction = instruction.replace("(use the provided format with backticks)", "")
+    instruction = instruction.replace("and enclose your code within delimiters.", "")
+    instruction = instruction.rstrip()
+    instruction += "\n\nRespond with only the Python code. No explanations, no markdown."
+
     response = example["completion"]
-
-    # Qwen chat format
-    text = f"<|im_start|>user\n{instruction}<|im_end|>\n<|im_start|>assistant\n{response}<|im_end|>"
-
+    # Qwen chat format (no system prompt)
+    text = f"{CHAT_USER}{instruction}{CHAT_END}\n{CHAT_ASSISTANT}{response}{CHAT_END}"
     return {"text": text}
 
 
@@ -70,6 +78,8 @@ def load_model_and_tokenizer(
         padding_side="right",
     )
 
+
+
     # Set pad token if not present
     if tokenizer.pad_token is None:
         tokenizer.pad_token = tokenizer.eos_token
@@ -78,7 +88,7 @@ def load_model_and_tokenizer(
     # Model loading kwargs
     model_kwargs = {
         "trust_remote_code": True,
-        "torch_dtype": torch.bfloat16,
+        "torch_dtype": torch.float16,
         "device_map": "auto",
     }
 
@@ -147,14 +157,23 @@ def check_bf16_support() -> Tuple[bool, str]:
     return supports_bf16, info_message
 
 
-def create_lora_config() -> LoraConfig:
-    """Create LoRA configuration for Qwen2.5-Coder."""
+def create_lora_config(
+    r: int = 4,
+    lora_alpha: int = 16,
+    lora_dropout: float = 0.1,
+) -> LoraConfig:
+    """Create LoRA configuration for Qwen2.5-Coder.
+
+    Matches the notebook implementation:
+    - rank r=4, alpha=16, dropout=0.1
+    - Applied to attention and MLP projection layers
+    """
     return LoraConfig(
         task_type=TaskType.CAUSAL_LM,
-        r=16,                          # LoRA rank
-        lora_alpha=32,                 # LoRA alpha (scaling factor)
-        lora_dropout=0.05,             # Dropout for LoRA layers
-        target_modules=[               # Qwen2.5 attention modules
+        r=r,
+        lora_alpha=lora_alpha,
+        lora_dropout=lora_dropout,
+        target_modules=[
             "q_proj",
             "k_proj",
             "v_proj",
@@ -168,6 +187,7 @@ def create_lora_config() -> LoraConfig:
 
 
 def main(args):
+    model_id = args.model_id or DEFAULT_MODEL_ID
     print(f"Loading dataset from {args.data_dir}...")
     dataset = load_from_disk(args.data_dir)
 
@@ -195,18 +215,50 @@ def main(args):
 
     print(f"Training on {len(train_dataset)} samples, evaluating on {len(eval_dataset)} samples")
 
+    # Optional: print token length stats and truncation warning (notebook behavior)
+    if getattr(args, "print_length_stats", True) and len(train_dataset) > 0:
+        import numpy as np
+        from transformers import AutoTokenizer
+        _tok = AutoTokenizer.from_pretrained(model_id, trust_remote_code=True)
+        lengths = []
+        for ex in train_dataset.select(range(min(500, len(train_dataset)))):
+            ids = _tok(ex["text"], truncation=False, add_special_tokens=False)["input_ids"]
+            lengths.append(len(ids))
+        lengths = np.array(lengths)
+        max_len = args.max_seq_length
+        truncated = (lengths > max_len).sum()
+        print(f"Token length stats (sample): min={lengths.min()}, median={int(np.median(lengths))}, p95={int(np.percentile(lengths, 95))}, max={lengths.max()}")
+        print(f"Truncated (>{max_len}): {truncated}/{len(lengths)} ({100 * truncated / len(lengths):.1f}%)")
+        if truncated / len(lengths) > 0.10:
+            print(f"  Consider increasing --max_seq_length (e.g. to {int(np.percentile(lengths, 95))})")
+
     # Load model and tokenizer
-    print(f"Loading model: {MODEL_ID}...")
+    print(f"Loading model: {model_id}...")
     model, tokenizer = load_model_and_tokenizer(
-        MODEL_ID,
+        model_id,
         use_4bit=args.use_4bit,
         use_flash_attention=args.use_flash_attention,
     )
 
+    tokenizer.model_max_length = args.max_seq_length
+
+
     # Apply LoRA
     print("Applying LoRA adapters...")
-    lora_config = create_lora_config()
+    lora_config = create_lora_config(
+        r=args.lora_r,
+        lora_alpha=args.lora_alpha,
+        lora_dropout=args.lora_dropout,
+    )
     model = get_peft_model(model, lora_config)
+    
+    # Verify that base weights are frozen (PEFT should do this automatically)
+    # Count trainable vs total parameters
+    trainable_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
+    total_params = sum(p.numel() for p in model.parameters())
+    print(f"Trainable parameters: {trainable_params:,} ({100 * trainable_params / total_params:.2f}%)")
+    print(f"Total parameters: {total_params:,}")
+    
     model.print_trainable_parameters()
 
     # Check bf16 support
@@ -251,16 +303,19 @@ def main(args):
         "save_strategy": "steps",
         "save_steps": args.save_steps,
         "save_total_limit": 3,
+        "load_best_model_at_end": True,
+        "metric_for_best_model": "eval_loss",
         "gradient_checkpointing": args.gradient_checkpointing,
         "optim": "paged_adamw_8bit" if args.use_4bit else "adamw_torch",
-        "report_to": "none",  # Set to "wandb" if you want W&B logging
+        "report_to": "none",
         "push_to_hub": False,
-        "max_grad_norm": 0.3,
-        "dataloader_num_workers": 4,
-        # Completion-only loss: only compute loss on assistant response
+        "max_grad_norm": 1.0,
+        "dataloader_num_workers": 0,  # IMPORTANT on Windows
         "completion_only_loss": True,
+        "dataset_text_field": "text",
+        "max_length": args.max_seq_length,
     }
-    
+
     # Add mixed precision settings
     if use_bf16:
         config_kwargs["bf16"] = True
@@ -285,9 +340,7 @@ def main(args):
         args=sft_config,
         train_dataset=train_dataset,
         eval_dataset=eval_dataset,
-        processing_class=tokenizer,  # This is the tokenizer parameter name
-        # Note: dataset_text_field, max_seq_length, and packing are not in the signature
-        # The dataset already has "text" field from format_example(), so it should work
+        processing_class=tokenizer,
     )
 
     # Train
@@ -304,7 +357,11 @@ def main(args):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="LoRA Finetuning for Qwen2.5-Coder-7B")
+    parser = argparse.ArgumentParser(description="LoRA Finetuning for Qwen2.5-Coder")
+
+    # Model arguments
+    parser.add_argument("--model_id", type=str, default=None,
+                        help=f"Base model ID (default: {DEFAULT_MODEL_ID}). Use Qwen/Qwen2.5-Coder-7B-Instruct for chat model.")
 
     # Data arguments
     parser.add_argument("--data_dir", type=str, default="data/leetcode",
@@ -332,9 +389,9 @@ if __name__ == "__main__":
     parser.add_argument("--gradient_accumulation_steps", type=int, default=8,
                         help="Gradient accumulation steps")
     parser.add_argument("--learning_rate", type=float, default=2e-4,
-                        help="Learning rate")
-    parser.add_argument("--max_seq_length", type=int, default=2048,
-                        help="Maximum sequence length")
+                        help="Learning rate (default: 2e-4 for LoRA fine-tuning)")
+    parser.add_argument("--max_seq_length", type=int, default=3072,
+                        help="Maximum sequence length (default 3072 to reduce truncation)")
     parser.add_argument("--gradient_checkpointing", action="store_true", default=True,
                         help="Use gradient checkpointing to save memory")
     parser.add_argument("--no_gradient_checkpointing", action="store_false",
@@ -348,5 +405,13 @@ if __name__ == "__main__":
     parser.add_argument("--resume_from_checkpoint", type=str, default=None,
                         help="Path to checkpoint to resume from")
 
+    # LoRA arguments (notebook defaults)
+    parser.add_argument("--lora_r", type=int, default=16, help="LoRA rank")
+    parser.add_argument("--lora_alpha", type=int, default=16, help="LoRA alpha")
+    parser.add_argument("--lora_dropout", type=float, default=0.1, help="LoRA dropout")
+    parser.add_argument("--no_print_length_stats", action="store_true",
+                        help="Skip printing token length / truncation stats")
+
     args = parser.parse_args()
+    args.print_length_stats = not args.no_print_length_stats
     main(args)

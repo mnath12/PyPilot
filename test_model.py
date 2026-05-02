@@ -1,5 +1,5 @@
 """
-Evaluation loop for testing Qwen2.5-Coder-14B on LeetCodeDataset test data.
+Evaluation loop for testing Qwen2.5-Coder-7B on LeetCodeDataset test data.
 Logs compilation rate and test pass rate.
 """
 
@@ -20,6 +20,11 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+# Qwen chat tokens (match training format)
+CHAT_USER = "<|im_start|>user\n"
+CHAT_ASSISTANT = "<|im_start|>assistant\n"
+CHAT_END = "<|im_end|>"
+
 
 def build_model_prompt(row: dict, include_prelude: bool = False) -> str:
     """
@@ -36,11 +41,15 @@ def build_model_prompt(row: dict, include_prelude: bool = False) -> str:
     prelude = (row.get("prompt") or "").strip()
 
     if include_prelude and prelude:
-        return prelude + "\n\n" + q + "\n"
-    return q + "\n"
+        user_content = prelude + "\n\n" + q
+    else:
+        user_content = q
+
+    user_content = user_content.strip()
+    return f"{CHAT_USER}{user_content}{CHAT_END}\n{CHAT_ASSISTANT}"
 
 
-def load_model_and_tokenizer(model_id: str = "Qwen/Qwen2.5-Coder-14B"):
+def load_model_and_tokenizer(model_id: str = "Qwen/Qwen2.5-Coder-7B"):
     """
     Load the model and tokenizer.
     
@@ -51,7 +60,10 @@ def load_model_and_tokenizer(model_id: str = "Qwen/Qwen2.5-Coder-14B"):
         Tuple of (model, tokenizer)
     """
     logger.info(f"Loading model: {model_id}")
-    tokenizer = AutoTokenizer.from_pretrained(model_id)
+    tokenizer = AutoTokenizer.from_pretrained(model_id, trust_remote_code=True)
+    if tokenizer.pad_token is None:
+        tokenizer.pad_token = tokenizer.eos_token
+        tokenizer.pad_token_id = tokenizer.eos_token_id
     model = AutoModelForCausalLM.from_pretrained(
         model_id,
         torch_dtype=torch.float16,
@@ -61,7 +73,14 @@ def load_model_and_tokenizer(model_id: str = "Qwen/Qwen2.5-Coder-14B"):
     return model, tokenizer
 
 
-def generate_code(model, tokenizer, prompt: str, max_new_tokens: int = 512, temperature: float = 0.7) -> str:
+def generate_code(
+    model,
+    tokenizer,
+    prompt: str,
+    max_new_tokens: int = 512,
+    do_sample: bool = False,
+    temperature: float = 0.0,
+) -> str:
     """
     Generate code from a prompt.
     
@@ -76,16 +95,31 @@ def generate_code(model, tokenizer, prompt: str, max_new_tokens: int = 512, temp
         Generated code string
     """
     inputs = tokenizer(prompt, return_tensors="pt").to(model.device)
-    
+
+    # Build list of stop token IDs (EOS + Qwen special tokens)
+    stop_token_ids = []
+    if tokenizer.eos_token_id is not None:
+        stop_token_ids.append(tokenizer.eos_token_id)
+
+    # Add Qwen-specific stop tokens
+    for stop_token in ["<|im_end|>", "<|file_sep|>", "<|fim_prefix|>", "<|endoftext|>"]:
+        token_id = tokenizer.convert_tokens_to_ids(stop_token)
+        if token_id is not None and token_id != tokenizer.unk_token_id:
+            stop_token_ids.append(token_id)
+
+    gen_kwargs = {
+        "max_new_tokens": max_new_tokens,
+        "do_sample": do_sample,
+        "pad_token_id": tokenizer.eos_token_id,
+    }
+    if stop_token_ids:
+        gen_kwargs["eos_token_id"] = stop_token_ids
+    if do_sample:
+        gen_kwargs["temperature"] = temperature
+
     with torch.no_grad():
-        outputs = model.generate(
-            **inputs,
-            max_new_tokens=max_new_tokens,
-            temperature=temperature,
-            do_sample=True,
-            pad_token_id=tokenizer.eos_token_id
-        )
-    
+        outputs = model.generate(**inputs, **gen_kwargs)
+
     # Decode only the newly generated tokens
     generated_text = tokenizer.decode(outputs[0][inputs['input_ids'].shape[1]:], skip_special_tokens=True)
     return generated_text
@@ -130,7 +164,7 @@ def evaluate_on_dataset(model, tokenizer, dataset, max_samples: int = None, incl
         
         # Generate code
         try:
-            generated_completion = generate_code(model, tokenizer, prompt)
+            generated_completion = generate_code(model, tokenizer, prompt, do_sample=False)
         except Exception as e:
             logger.error(f"Error generating code for {task_id}: {e}")
             continue
@@ -186,14 +220,15 @@ def main():
     """Main evaluation function."""
     # Load model
     model, tokenizer = load_model_and_tokenizer("Qwen/Qwen2.5-Coder-7B")
+
     
     # Load dataset
     logger.info("Loading dataset from disk...")
     dataset = load_from_disk("data/leetcode")
     logger.info(f"Dataset loaded. Test set size: {len(dataset['test'])}")
     
-    # Evaluate
-    metrics = evaluate_on_dataset(model, tokenizer, dataset, max_samples=None, include_prelude=True)
+    # Evaluate (use max_samples=50 for faster test, None for full 228 samples)
+    metrics = evaluate_on_dataset(model, tokenizer, dataset, max_samples=50, include_prelude=True)
     
     # Log final results
     logger.info("=" * 60)
